@@ -48,7 +48,6 @@ const StockTradingMain = () => {
         { rank: 19, name: '케이씨티', price: 3105, change: 18.0, volume: 2.5 },
         { rank: 20, name: '보성파워텍', price: 3180, change: 7.0, volume: 2.5 }
     ];
-
     // 지수 데이터 (토스와 유사하게)
     const indexData = [
         { name: '코스피', value: 2598.10, change: -4.43, percentage: -0.1, chart: '📈' },
