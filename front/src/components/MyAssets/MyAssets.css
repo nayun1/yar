@@ -1,0 +1,395 @@
+/* 기본 스타일 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.app-container {
+    min-height: 100vh;
+    background-color: #1a1a1a;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+}
+
+/* 헤더 */
+.header {
+    background-color: #1a1a1a;
+    padding: 12px 24px;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.logo-image {
+    height: 42px;
+    width: auto;
+}
+
+.main-nav {
+    display: flex;
+    gap: 24px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 8px 0;
+}
+
+.nav-item:hover {
+    color: white;
+}
+
+.nav-item.active {
+    color: #4285f4;
+    font-weight: 600;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+/* 로그인 관련 스타일 */
+.login-loading {
+    color: #888;
+    font-size: 14px;
+}
+
+.user-info-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: transparent;
+    border-radius: 6px;
+    color: #e0e0e0;
+}
+
+.profile-image {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.user-name {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.logout-btn:hover {
+    background-color: #ff4444;
+    border-color: #ff4444;
+    color: white;
+}
+
+.login-btn {
+    background-color: transparent;
+    color: #e0e0e0;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.login-btn:hover {
+    background-color: #3a3a3a;
+}
+
+/* 자산 페이지 레이아웃 */
+.assets-layout {
+    display: flex;
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: calc(100vh - 60px);
+}
+
+/* 사이드바 */
+.assets-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 220px;
+    background-color: #1a1a1a;
+    padding-top: 80px;
+    z-index: 1000;
+}
+
+/* 사이드바 메뉴 */
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+}
+
+/* 메뉴 항목 */
+.sidebar-menu-item {
+    padding: 8px 20px;
+    background: transparent;
+    border: none;
+    color: #ccc;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 400;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    border-radius: 0;
+    width: 160px;
+    margin-left: 14px;
+}
+
+/* hover 효과 */
+.sidebar-menu-item:hover {
+    background-color: #1f1f1f;
+    color: #fff;
+}
+
+/* 활성화된 메뉴 */
+.sidebar-menu-item.active {
+    background-color: rgb(48, 48, 56);
+    color: #fff;
+    border-radius: 7px;
+    margin-left: 8px;
+    transform: translateX(6px);
+}
+
+/* 메인 콘텐츠 */
+.assets-main {
+    flex: 1;
+    padding: 20px 24px;
+    background-color: #1a1a1a;
+    margin-left: 220px;
+    max-width: 800px;
+}
+
+/* 총 자산 섹션 */
+.total-assets-section {
+    margin-bottom: 40px;
+}
+
+.asset-item-detail {
+    background-color: transparent;
+    padding: 0;
+}
+
+.asset-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -1px;
+}
+
+.negative {
+    color: #4a9eff;
+}
+
+/* 주문 가능 금액 섹션 */
+.order-available-section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.order-amounts {
+    display: flex;
+    gap: 12px;
+}
+
+.order-item {
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    padding: 20px;
+    flex: 1;
+}
+
+.order-item-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.order-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #3a3a3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.currency-icon {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+}
+
+.currency-icon.dollar {
+    color: #4a9eff;
+}
+
+.order-details {
+    flex: 1;
+}
+
+.order-label {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.order-amount {
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+}
+
+/* 투자중인 금액 섹션 */
+.investment-section {
+    margin-bottom: 40px;
+}
+
+.investment-total {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+}
+
+.total-change {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.total-change.negative {
+    color: #4a9eff;
+}
+
+.investment-breakdown {
+    display: flex;
+    gap: 12px;
+}
+
+.investment-item {
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    padding: 20px;
+    flex: 1;
+}
+
+.investment-item-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.investment-flag {
+    font-size: 24px;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.investment-info {
+    flex: 1;
+}
+
+.investment-label {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.investment-value {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+}
+
+.dollar-value {
+    color: #888;
+    font-size: 14px;
+    font-weight: 400;
+    margin-left: 8px;
+}
+
+.investment-change {
+    font-size: 12px;
+    color: #888;
+}
+
+.investment-change.negative {
+    color: #4a9eff;
+}

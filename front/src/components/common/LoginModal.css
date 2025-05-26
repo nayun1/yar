@@ -1,0 +1,122 @@
+/* src/components/common/LoginModal.css */
+.login-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+}
+
+.login-modal {
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid #3a3a3a;
+}
+
+.login-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.login-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.login-modal-close {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.login-modal-close:hover {
+    color: white;
+    background-color: #3a3a3a;
+}
+
+.login-modal-content {
+    padding: 24px;
+}
+
+.login-modal-description {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.login-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kakao-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    background-color: #fee500;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.kakao-login-btn:hover {
+    background-color: #fdd835;
+}
+
+.kakao-icon {
+    font-size: 18px;
+}
+
+.login-footer {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #3a3a3a;
+}
+
+.login-terms {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+    text-align: center;
+    margin: 0;
+}
+
+.terms-link {
+    color: #4285f4;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.terms-link:hover {
+    color: #5a9cff;
+}

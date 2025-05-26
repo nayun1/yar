@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, User, LogOut } from 'lucide-react';
+import useAuth from '../../hooks/useAuth';
+import LoginModal from '../common/LoginModal';
+import KakaoAuth from '../../utils/KakaoAuth';
 import './StockTradingMain.css';
 
 const StockTradingMain = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [currentPage, setCurrentPage] = useState(1);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    // 인증 상태 관리
+    const { isLoggedIn, userInfo, loading, logout } = useAuth();
 
     // 실시간 시간 업데이트
     useEffect(() => {
@@ -13,6 +20,20 @@ const StockTradingMain = () => {
         }, 1000);
         return () => clearInterval(timer);
     }, []);
+
+    // 외부 클릭 시 사용자 메뉴 닫기 (더 이상 필요없음)
+    // useEffect(() => {
+    //     const handleClickOutside = (event) => {
+    //         if (showUserMenu && !event.target.closest('.user-menu-container')) {
+    //             setShowUserMenu(false);
+    //         }
+    //     };
+
+    //     document.addEventListener('mousedown', handleClickOutside);
+    //     return () => {
+    //         document.removeEventListener('mousedown', handleClickOutside);
+    //     };
+    // }, [showUserMenu]);
 
     // 샘플 주식 데이터 (토스와 동일하게)
     const stockData = [
@@ -63,6 +84,49 @@ const StockTradingMain = () => {
         return null;
     };
 
+    const getUserDisplayName = () => {
+        if (!userInfo) return '';
+
+        const { kakao_account, properties } = userInfo;
+
+        // 닉네임 우선, 없으면 이름 사용
+        if (properties?.nickname) return properties.nickname;
+        if (kakao_account?.profile?.nickname) return kakao_account.profile.nickname;
+        if (kakao_account?.name) return kakao_account.name;
+
+        return '사용자';
+    };
+
+    const getUserProfileImage = () => {
+        if (!userInfo) return null;
+
+        const { kakao_account, properties } = userInfo;
+
+        // 프로필 이미지 URL 가져오기 (여러 경로 시도)
+        if (kakao_account?.profile?.profile_image_url) {
+            return kakao_account.profile.profile_image_url;
+        }
+        if (kakao_account?.profile?.thumbnail_image_url) {
+            return kakao_account.profile.thumbnail_image_url;
+        }
+        if (properties?.profile_image) {
+            return properties.profile_image;
+        }
+        if (properties?.thumbnail_image) {
+            return properties.thumbnail_image;
+        }
+
+        return null;
+    };
+
+    const handleLoginClick = () => {
+        setShowLoginModal(true);
+    };
+
+    const handleKakaoLogin = () => {
+        KakaoAuth.login();
+    };
+
     return (
         <div className="app-container">
             {/* 헤더 */}
@@ -70,23 +134,57 @@ const StockTradingMain = () => {
                 <div className="header-content">
                     <div className="header-left">
                         <div className="logo">
-                            <span className="logo-text">Young & Rich</span>
+                            <a href="/" className="logo-link">
+                                <img src="/images/logo.png" alt="Young & Rich" className="logo-image"/>
+                            </a>
                         </div>
                         <nav className="main-nav">
                             <span className="nav-item">홈</span>
                             <span className="nav-item">뉴스</span>
                             <span className="nav-item">관심</span>
-                            <span className="nav-item">내 자산</span>
+                            <a href="/my-assets" className="nav-item">내 자산</a>
                         </nav>
                     </div>
                     <div className="header-right">
                         <div className="search-bar">
                             <span className="search-placeholder">종목명을 검색하세요</span>
                         </div>
-                        <button className="login-btn">로그인</button>
+
+                        {loading ? (
+                            <div className="login-loading">로딩...</div>
+                        ) : isLoggedIn ? (
+                            <div className="user-info-container">
+                                <div className="user-profile">
+                                    {getUserProfileImage() ? (
+                                        <img
+                                            src={getUserProfileImage()}
+                                            alt="프로필"
+                                            className="profile-image"
+                                        />
+                                    ) : (
+                                        <User className="profile-icon" />
+                                    )}
+                                    <span className="user-name">{getUserDisplayName()}</span>
+                                </div>
+                                <button className="logout-btn" onClick={logout}>
+                                    로그아웃
+                                </button>
+                            </div>
+                        ) : (
+                            <button className="login-btn" onClick={handleLoginClick}>
+                                로그인
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
+
+            {/* 로그인 모달 */}
+            <LoginModal
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+                onKakaoLogin={handleKakaoLogin}
+            />
 
             <div className="main-layout">
                 {/* 메인 콘텐츠 */}
@@ -181,8 +279,8 @@ const StockTradingMain = () => {
                                     <div className="index-value">
                                         {index.value.toLocaleString()}
                                         <span className={`index-change ${getChangeClass(index.change)}`}>
-                      {index.change > 0 ? '+' : ''}{index.change}({index.percentage > 0 ? '+' : ''}{index.percentage}%)
-                    </span>
+                                            {index.change > 0 ? '+' : ''}{index.change}({index.percentage > 0 ? '+' : ''}{index.percentage}%)
+                                        </span>
                                     </div>
                                 </div>
                             </div>
