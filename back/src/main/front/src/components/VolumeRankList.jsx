@@ -16,8 +16,10 @@
                 <ul>
                     {volumeRank.map((item, index) => (
                         <li key={index}>
-                            {item.htsKorIsnm} - {Number(item.acmlVol).toLocaleString()}주
+                            {item.dataRank}. {item.htsKorIsnm} - {Number(item.stckPrpr).toLocaleString()}원 (
+                            {item.prdyCtrt}%), 거래량: {(Number(item.acmlVol) / 1_000_000).toFixed(1)}백만 주
                         </li>
+
                     ))}
                 </ul>
 
