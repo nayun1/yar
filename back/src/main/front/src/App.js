@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import StockTradingMain from './components/Main/StockTradingMain';
 import MyAssets from './components/MyAssets/MyAssets';
 import KakaoCallback from './components/common/KakaoCallback';
+import VolumeRankList from './components/VolumeRankList';
+
 import './App.css';
 
 function App() {
@@ -14,7 +16,9 @@ function App() {
                     <Route path="/" element={<StockTradingMain />} />
                     <Route path="/my-assets" element={<MyAssets />} />
                     <Route path="/oauth/callback/kakao" element={<KakaoCallback />} />
+                    <Route path="/volume-rank" element={<VolumeRankList />} /> {/* 추가 */}
                 </Routes>
+
             </div>
         </Router>
     );
