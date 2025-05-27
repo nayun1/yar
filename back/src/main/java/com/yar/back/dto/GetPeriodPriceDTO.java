@@ -1,0 +1,5 @@
+package com.yar.back.dto;
+
+public class GetPeriodPriceDTO {
+
+}

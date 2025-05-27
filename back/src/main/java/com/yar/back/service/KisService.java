@@ -2,7 +2,7 @@ package com.yar.back.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yar.back.dto.ResponseOutputDTO;
+import com.yar.back.dto.VolumeRankOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -44,14 +44,14 @@ public class KisService {
         return headers;
     }
 
-    private Mono<List<ResponseOutputDTO>> parseFVolumeRank(String response) {
+    private Mono<List<VolumeRankOutputDTO>> parseFVolumeRank(String response) {
         try {
-            List<ResponseOutputDTO> responseDataList = new ArrayList<>();
+            List<VolumeRankOutputDTO> responseDataList = new ArrayList<>();
             JsonNode rootNode = objectMapper.readTree(response);
             JsonNode outputNode = rootNode.get("output");
             if (outputNode != null) {
                 for (JsonNode node : outputNode) {
-                    ResponseOutputDTO responseData = new ResponseOutputDTO();
+                    VolumeRankOutputDTO responseData = new VolumeRankOutputDTO();
                     responseData.setHtsKorIsnm(node.get("hts_kor_isnm").asText());
                     responseData.setMkscShrnIscd(node.get("mksc_shrn_iscd").asText());
                     responseData.setDataRank(node.get("data_rank").asText());
@@ -79,7 +79,7 @@ public class KisService {
             return Mono.error(e);
         }
     }
-    public Mono<List<ResponseOutputDTO>> getVolumeRank() {
+    public Mono<List<VolumeRankOutputDTO>> getVolumeRank() {
         HttpHeaders headers = createVolumeRankHttpHeaders();
 
         return webClient.get()

@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class ResponseOutputDTO {
+public class VolumeRankOutputDTO {
     // HTS 한글 종목명
     private String htsKorIsnm;
 
