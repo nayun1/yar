@@ -7,6 +7,7 @@ const VolumeRankList = () => {
 
     if (loading) return <p>로딩 중...</p>;
     if (error) return <p>에러 발생: {error.message}</p>;
+    // ✅ 데이터가 로딩되고 에러도 없을 때 출력
 
     return (
         <div className="volume-rank-container">
@@ -15,6 +16,7 @@ const VolumeRankList = () => {
                 {volumeRank.map((item, index) => {
                     // 등락률에 따라 색상 다르게 하기
                     const isNegative = Number(item.prdyCtrt) < 0;
+                    console.log(item.dataRank);
                     return (
                         <li key={index} className="volume-rank-item">
                             <span className="rank-number">{item.dataRank}.</span>
