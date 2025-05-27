@@ -3,12 +3,19 @@ import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, User, LogOut } fro
 import useAuth from '../../hooks/useAuth';
 import LoginModal from '../common/LoginModal';
 import KakaoAuth from '../../utils/KakaoAuth';
+import { fetchVolumeRank } from '../../utils/kisApi';
 import './StockTradingMain.css';
 
 const StockTradingMain = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [currentPage, setCurrentPage] = useState(1);
     const [showLoginModal, setShowLoginModal] = useState(false);
+
+    // 거래량 순위 상태 추가
+    const [volumeRankData, setVolumeRankData] = useState([]);
+    const [stockDataLoading, setStockDataLoading] = useState(true);
+    const [stockDataError, setStockDataError] = useState(null);
+    const [activeFilter, setActiveFilter] = useState('거래대금'); // 현재 활성 필터
 
     // 인증 상태 관리
     const { isLoggedIn, userInfo, loading, logout } = useAuth();
@@ -21,33 +28,41 @@ const StockTradingMain = () => {
         return () => clearInterval(timer);
     }, []);
 
-    // 외부 클릭 시 사용자 메뉴 닫기 (더 이상 필요없음)
-    // useEffect(() => {
-    //     const handleClickOutside = (event) => {
-    //         if (showUserMenu && !event.target.closest('.user-menu-container')) {
-    //             setShowUserMenu(false);
-    //         }
-    //     };
+    // API에서 거래량 순위 데이터 가져오기
+    useEffect(() => {
+        const loadVolumeRankData = async () => {
+            try {
+                setStockDataLoading(true);
+                const data = await fetchVolumeRank();
+                setVolumeRankData(data);
+                setStockDataError(null);
+            } catch (error) {
+                console.error('거래량 순위 데이터 로딩 실패:', error);
+                setStockDataError(error.message);
+            } finally {
+                setStockDataLoading(false);
+            }
+        };
 
-    //     document.addEventListener('mousedown', handleClickOutside);
-    //     return () => {
-    //         document.removeEventListener('mousedown', handleClickOutside);
-    //     };
-    // }, [showUserMenu]);
+        loadVolumeRankData();
 
-    // 샘플 주식 데이터 (토스와 동일하게)
-    const stockData = [
-        { rank: 11, name: '한화오션', price: 76300, change: -1.2, volume: 4.4 },
-        { rank: 12, name: '삼성전자', price: 54600, change: -0.1, volume: 4.0 },
-        { rank: 13, name: '신풍제약', price: 10730, change: 2.4, volume: 4.0 },
-        { rank: 14, name: '진원생명과학', price: 3820, change: 13.5, volume: 3.6 },
-        { rank: 15, name: '평화홀딩스', price: 9480, change: 3.0, volume: 3.2 },
-        { rank: 16, name: 'SK하이닉스', price: 200000, change: 1.5, volume: 3.0 },
-        { rank: 17, name: '지투파워', price: 9590, change: 1.2, volume: 2.9 },
-        { rank: 18, name: '삼성바이오로직스', price: 1041000, change: -3.6, volume: 2.5 },
-        { rank: 19, name: '케이씨티', price: 3105, change: 18.0, volume: 2.5 },
-        { rank: 20, name: '보성파워텍', price: 3180, change: 7.0, volume: 2.5 }
-    ];
+        // 10초마다 데이터 새로고침 (실시간 업데이트)
+        const interval = setInterval(loadVolumeRankData, 10000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // API 데이터를 화면 표시용 형태로 변환
+    const transformApiDataToDisplayFormat = (apiData) => {
+        return apiData.map((item, index) => ({
+            rank: parseInt(item.dataRank) || (index + 1),
+            name: item.htsKorIsnm || '종목명 없음',
+            price: parseInt(item.stckPrpr) || 0,
+            change: parseFloat(item.prdyCtrt) || 0,
+            volume: Math.round((parseInt(item.acmlVol) || 0) / 1000000 * 10) / 10 // 억원 단위로 변환 (대략적)
+        }));
+    };
+
     // 지수 데이터 (토스와 유사하게)
     const indexData = [
         { name: '코스피', value: 2598.10, change: -4.43, percentage: -0.1, chart: '📈' },
@@ -126,6 +141,16 @@ const StockTradingMain = () => {
         KakaoAuth.login();
     };
 
+    // 필터 탭 클릭 핸들러
+    const handleFilterClick = (filterName) => {
+        setActiveFilter(filterName);
+        // 여기에 각 필터에 따른 API 호출 로직을 추가할 수 있습니다
+        console.log(`필터 변경: ${filterName}`);
+    };
+
+    // API 데이터를 변환하여 표시
+    const currentStockData = transformApiDataToDisplayFormat(volumeRankData);
+
     return (
         <div className="app-container">
             {/* 헤더 */}
@@ -139,7 +164,6 @@ const StockTradingMain = () => {
                         </div>
                         <nav className="main-nav">
                             <span className="nav-item">홈</span>
-                            <span className="nav-item">뉴스</span>
                             <span className="nav-item">관심</span>
                             <a href="/my-assets" className="nav-item">내 자산</a>
                         </nav>
@@ -194,29 +218,22 @@ const StockTradingMain = () => {
                             <h1 className="main-title">
                                 실시간 차트
                                 <span className="time-label">오늘 {formatTime(currentTime)} 기준</span>
+                                {stockDataLoading && <span className="loading-indicator"> (데이터 로딩 중...)</span>}
+                                {stockDataError && <span className="error-indicator"> (데이터 로딩 실패)</span>}
                             </h1>
                         </div>
 
                         {/* 필터 탭 */}
                         <div className="filter-tabs">
-                            <button className="tab active">거래대금</button>
-                            <button className="tab">거래량</button>
-                            <button className="tab">거래대금</button>
-                            <button className="tab">거래량</button>
-                            <button className="tab">급상승</button>
-                            <button className="tab">급하락</button>
-                            <button className="tab">인기</button>
-                        </div>
-
-                        {/* 시간 필터 */}
-                        <div className="time-filters">
-                            <button className="time-tab active">실시간</button>
-                            <button className="time-tab">1일</button>
-                            <button className="time-tab">1주일</button>
-                            <button className="time-tab">1개월</button>
-                            <button className="time-tab">3개월</button>
-                            <button className="time-tab">6개월</button>
-                            <button className="time-tab">1년</button>
+                            {['거래대금', '거래량', '급상승', '급하락'].map((filter) => (
+                                <button
+                                    key={filter}
+                                    className={`tab ${activeFilter === filter ? 'active' : ''}`}
+                                    onClick={() => handleFilterClick(filter)}
+                                >
+                                    {filter}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
@@ -226,89 +243,38 @@ const StockTradingMain = () => {
                             <div>종목</div>
                             <div>현재가</div>
                             <div>등락률</div>
-                            <div>거래대금 많은 순</div>
+                            <div>거래량 많은 순</div>
                         </div>
 
-                        {stockData.map((stock) => (
-                            <div key={stock.rank} className="table-row">
-                                <div className="stock-info">
-                                    <span className="rank">{stock.rank}</span>
-                                    <div className="company-icon">🏢</div>
-                                    <span className="name">{stock.name}</span>
-                                </div>
-                                <div className="price">{formatPrice(stock.price)}</div>
-                                <div className={`change ${getChangeClass(stock.change)}`}>
-                                    {stock.change > 0 ? '+' : ''}{stock.change}%
-                                </div>
-                                <div className="volume">{stock.volume}억원</div>
+                        {stockDataLoading ? (
+                            <div className="loading-container">
+                                <p>거래량 순위 데이터를 불러오는 중...</p>
                             </div>
-                        ))}
-
-                        {/* 페이지네이션 */}
-                        <div className="pagination">
-                            <button className="page-btn">
-                                <ChevronLeft className="page-icon"/>
-                            </button>
-                            <button className="page-number">1</button>
-                            <button className="page-number">2</button>
-                            <button className="page-number active">3</button>
-                            <button className="page-number">4</button>
-                            <button className="page-number">5</button>
-                            <span className="page-dots">...</span>
-                            <button className="page-number">10</button>
-                            <button className="page-btn">
-                                <ChevronRight className="page-icon"/>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* 사이드바 - 지수만 */}
-                <div className="sidebar">
-                    <div className="sidebar-tabs">
-                        <button className="sidebar-tab active">지수 · 환율</button>
-                    </div>
-
-                    <div className="index-list">
-                        {indexData.map((index, i) => (
-                            <div key={i} className="index-item">
-                                <div className="index-chart">{index.chart}</div>
-                                <div className="index-info">
-                                    <div className="index-name">{index.name}</div>
-                                    <div className="index-value">
-                                        {index.value.toLocaleString()}
-                                        <span className={`index-change ${getChangeClass(index.change)}`}>
-                                            {index.change > 0 ? '+' : ''}{index.change}({index.percentage > 0 ? '+' : ''}{index.percentage}%)
-                                        </span>
+                        ) : stockDataError ? (
+                            <div className="error-container">
+                                <p>데이터를 불러올 수 없습니다.</p>
+                                <p>오류: {stockDataError}</p>
+                            </div>
+                        ) : currentStockData.length === 0 ? (
+                            <div className="empty-container">
+                                <p>표시할 데이터가 없습니다.</p>
+                            </div>
+                        ) : (
+                            currentStockData.map((stock) => (
+                                <div key={stock.rank} className="table-row">
+                                    <div className="stock-info">
+                                        <span className="rank">{stock.rank}</span>
+                                        <div className="company-icon">🏢</div>
+                                        <span className="name">{stock.name}</span>
                                     </div>
+                                    <div className="price">{formatPrice(stock.price)}</div>
+                                    <div className={`change ${getChangeClass(stock.change)}`}>
+                                        {stock.change > 0 ? '+' : ''}{stock.change}%
+                                    </div>
+                                    <div className="volume">{stock.volume}백만 주</div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="news-section">
-                        <div className="news-tabs">
-                            <button className="news-tab active">주요 뉴스</button>
-                            <button className="news-tab">추천 뉴스</button>
-                        </div>
-
-                        <div className="news-item">
-                            <div className="news-image">📰</div>
-                            <div className="news-content">
-                                <div className="news-title">코스피, 개인 매수 2600억 원</div>
-                                <div className="news-subtitle">외국.. 원자재 강세</div>
-                                <div className="news-time">1시간 전 · 한국경제</div>
-                            </div>
-                        </div>
-
-                        <div className="news-item">
-                            <div className="news-image">📊</div>
-                            <div className="news-content">
-                                <div className="news-title">[ETF 시황] 美 USA 진짜모든 강보</div>
-                                <div className="news-subtitle">함.. 경기스패피 섹터 투도히지</div>
-                                <div className="news-time">1시간 전 · 연합인포맥스</div>
-                            </div>
-                        </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
