@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, User, LogOut } fro
 import useAuth from '../../hooks/useAuth';
 import LoginModal from '../common/LoginModal';
 import KakaoAuth from '../../utils/KakaoAuth';
-import { fetchVolumeRank } from '../../utils/kisApi';
+import { fetchVolumeRank, fetchTradingValueRank, fetchRiseRank, fetchFallRank } from '../../utils/kisApi';
 import './StockTradingMain.css';
 
 const StockTradingMain = () => {
@@ -15,7 +15,7 @@ const StockTradingMain = () => {
     const [volumeRankData, setVolumeRankData] = useState([]);
     const [stockDataLoading, setStockDataLoading] = useState(true);
     const [stockDataError, setStockDataError] = useState(null);
-    const [activeFilter, setActiveFilter] = useState('거래대금'); // 현재 활성 필터
+    const [activeFilter, setActiveFilter] = useState('거래량'); // 현재 활성 필터
 
     // 인증 상태 관리
     const { isLoggedIn, userInfo, loading, logout } = useAuth();
@@ -30,27 +30,49 @@ const StockTradingMain = () => {
 
     // API에서 거래량 순위 데이터 가져오기
     useEffect(() => {
-        const loadVolumeRankData = async () => {
+        const loadRankData = async (isManual = true) => {
             try {
-                setStockDataLoading(true);
-                const data = await fetchVolumeRank();
+                // 수동 새로고침일 때만 로딩 표시
+                if (isManual) {
+                    setStockDataLoading(true);
+                }
+
+                let data;
+
+                if (activeFilter === '거래대금') {
+                    data = await fetchTradingValueRank();
+                } else if (activeFilter === '거래량') {
+                    data = await fetchVolumeRank();
+                } else if (activeFilter === '급상승') {
+                    data = await fetchRiseRank();
+                } else if (activeFilter === '급하락') {
+                    data = await fetchFallRank();
+                } else {
+                    // 다른 필터는 아직 구현 안됨
+                    return;
+                }
+
                 setVolumeRankData(data);
                 setStockDataError(null);
             } catch (error) {
-                console.error('거래량 순위 데이터 로딩 실패:', error);
+                console.error(`${activeFilter} 순위 데이터 로딩 실패:`, error);
                 setStockDataError(error.message);
             } finally {
-                setStockDataLoading(false);
+                // 수동 새로고침일 때만 로딩 해제
+                if (isManual) {
+                    setStockDataLoading(false);
+                }
             }
         };
 
-        loadVolumeRankData();
+        // 처음 로드 (수동)
+        loadRankData(true);
 
-        // 10초마다 데이터 새로고침 (실시간 업데이트)
-        const interval = setInterval(loadVolumeRankData, 10000);
+        // 10초마다 자동 새로고침 (자동)
+        const interval = setInterval(() => loadRankData(false), 10000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [activeFilter]); // activeFilter가 변경될 때마다 새로 실행
 
     // API 데이터를 화면 표시용 형태로 변환
     const transformApiDataToDisplayFormat = (apiData) => {
@@ -59,20 +81,11 @@ const StockTradingMain = () => {
             name: item.htsKorIsnm || '종목명 없음',
             price: parseInt(item.stckPrpr) || 0,
             change: parseFloat(item.prdyCtrt) || 0,
-            volume: Math.round((parseInt(item.acmlVol) || 0) / 1000000 * 10) / 10 // 억원 단위로 변환 (대략적)
+            volume: activeFilter === '거래대금'
+                ? Math.round((parseInt(item.acmlTrPbmn) || 0) / 100000000) // 거래대금: 억원 단위
+                : Math.round((parseInt(item.acmlVol) || 0) / 1000000 * 10) / 10 // 거래량: 백만 주 단위 (급상승/급하락 포함)
         }));
     };
-
-    // 지수 데이터 (토스와 유사하게)
-    const indexData = [
-        { name: '코스피', value: 2598.10, change: -4.43, percentage: -0.1, chart: '📈' },
-        { name: '코스닥', value: 715.86, change: -1.81, percentage: -0.2, chart: '📈' },
-        { name: '나스닥', value: 18925.74, change: 53.1, percentage: 0.2, chart: '📊' },
-        { name: 'S&P 500', value: 5842.01, change: -2.6, percentage: -0.04, chart: '📈' },
-        { name: 'VIX', value: 20.28, change: -0.59, percentage: -2.8, chart: '📉' },
-        { name: '환율', value: 1374.20, change: -4.2, percentage: -0.3, chart: '📈' },
-        { name: '달러 인덱스', value: 99.64, change: -0.32, percentage: -0.3, chart: '📈' }
-    ];
 
     const formatTime = (date) => {
         return date.toLocaleTimeString('ko-KR', {
@@ -142,10 +155,34 @@ const StockTradingMain = () => {
     };
 
     // 필터 탭 클릭 핸들러
-    const handleFilterClick = (filterName) => {
+    const handleFilterClick = async (filterName) => {
         setActiveFilter(filterName);
-        // 여기에 각 필터에 따른 API 호출 로직을 추가할 수 있습니다
-        console.log(`필터 변경: ${filterName}`);
+
+        try {
+            setStockDataLoading(true);
+            let data;
+
+            if (filterName === '거래량') {
+                data = await fetchVolumeRank();
+            } else if (filterName === '거래대금') {
+                data = await fetchTradingValueRank();
+            } else if (filterName === '급상승') {
+                data = await fetchRiseRank();
+            } else if (filterName === '급하락') {
+                data = await fetchFallRank();
+            } else {
+                console.log(`${filterName} 기능은 아직 구현되지 않았습니다.`);
+                return;
+            }
+
+            setVolumeRankData(data);
+            setStockDataError(null);
+        } catch (error) {
+            console.error(`${filterName} 데이터 로딩 실패:`, error);
+            setStockDataError(error.message);
+        } finally {
+            setStockDataLoading(false);
+        }
     };
 
     // API 데이터를 변환하여 표시
@@ -159,7 +196,7 @@ const StockTradingMain = () => {
                     <div className="header-left">
                         <div className="logo">
                             <a href="/" className="logo-link">
-                                <img src="/images/logo.png" alt="Young & Rich" className="logo-image"/>
+                                <img src="/images/logo.png" alt="Young & Rich" className="main-logo-image"/>
                             </a>
                         </div>
                         <nav className="main-nav">
@@ -225,7 +262,7 @@ const StockTradingMain = () => {
 
                         {/* 필터 탭 */}
                         <div className="filter-tabs">
-                            {['거래대금', '거래량', '급상승', '급하락'].map((filter) => (
+                            {['거래량', '거래대금', '급상승', '급하락'].map((filter) => (
                                 <button
                                     key={filter}
                                     className={`tab ${activeFilter === filter ? 'active' : ''}`}
@@ -239,11 +276,15 @@ const StockTradingMain = () => {
 
                     {/* 주식 테이블 */}
                     <div className="stock-table">
-                        <div className="table-header">
+                        <div className={`table-header ${(activeFilter === '급상승' || activeFilter === '급하락') ? 'three-columns' : ''}`}>
                             <div>종목</div>
                             <div>현재가</div>
                             <div>등락률</div>
-                            <div>거래량 많은 순</div>
+                            {(activeFilter === '거래량' || activeFilter === '거래대금') && (
+                                <div>
+                                    {activeFilter === '거래대금' ? '거래대금 많은 순' : '거래량 많은 순'}
+                                </div>
+                            )}
                         </div>
 
                         {stockDataLoading ? (
@@ -261,7 +302,7 @@ const StockTradingMain = () => {
                             </div>
                         ) : (
                             currentStockData.map((stock) => (
-                                <div key={stock.rank} className="table-row">
+                                <div key={stock.rank} className={`table-row ${(activeFilter === '급상승' || activeFilter === '급하락') ? 'three-columns' : ''}`}>
                                     <div className="stock-info">
                                         <span className="rank">{stock.rank}</span>
                                         <div className="company-icon">🏢</div>
@@ -271,7 +312,11 @@ const StockTradingMain = () => {
                                     <div className={`change ${getChangeClass(stock.change)}`}>
                                         {stock.change > 0 ? '+' : ''}{stock.change}%
                                     </div>
-                                    <div className="volume">{stock.volume}백만 주</div>
+                                    {(activeFilter === '거래량' || activeFilter === '거래대금') && (
+                                        <div className="volume">
+                                            {activeFilter === '거래대금' ? `${stock.volume.toLocaleString()}억원` : `${stock.volume.toLocaleString()}백만 주`}
+                                        </div>
+                                    )}
                                 </div>
                             ))
                         )}

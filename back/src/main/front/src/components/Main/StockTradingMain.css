@@ -44,8 +44,8 @@
     align-items: center;
 }
 
-.logo-image {
-    height: 42px;
+.main-logo-image {
+    height: 70px;
     width: auto;
 }
 
@@ -164,7 +164,7 @@
     gap: 24px;
     min-height: calc(100vh - 100px);
     align-items: flex-start;
-    padding-top: 90px;
+    padding-top: 50px;
 }
 
 .main-content {
@@ -262,6 +262,11 @@
     border-bottom: 1px solid #3a3a3a;
 }
 
+/* 급상승/급하락일 때 3개 컬럼으로 조정 */
+.table-header.three-columns {
+    grid-template-columns: 2fr 1.5fr 1.5fr;
+}
+
 .table-header div:not(:first-child) {
     text-align: right;
 }
@@ -275,6 +280,11 @@
     align-items: center;
     font-size: 13px;
     background-color: transparent;
+}
+
+/* 급상승/급하락일 때 3개 컬럼으로 조정 */
+.table-row.three-columns {
+    grid-template-columns: 2fr 1.5fr 1.5fr;
 }
 
 .table-row:hover {

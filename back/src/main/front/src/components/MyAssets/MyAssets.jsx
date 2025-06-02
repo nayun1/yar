@@ -398,7 +398,6 @@ const MyAssets = () => {
                         </div>
                         <nav className="main-nav">
                             <a href="/" className="nav-item">홈</a>
-                            <span className="nav-item">뉴스</span>
                             <span className="nav-item">관심</span>
                             <span className="nav-item active">내 자산</span>
                         </nav>
