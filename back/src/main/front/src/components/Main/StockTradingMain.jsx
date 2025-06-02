@@ -5,6 +5,7 @@ import LoginModal from '../common/LoginModal';
 import KakaoAuth from '../../utils/KakaoAuth';
 import { fetchVolumeRank, fetchTradingValueRank, fetchRiseRank, fetchFallRank } from '../../utils/kisApi';
 import './StockTradingMain.css';
+import StockSearch from "./StockSearch";
 
 const StockTradingMain = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -206,9 +207,7 @@ const StockTradingMain = () => {
                         </nav>
                     </div>
                     <div className="header-right">
-                        <div className="search-bar">
-                            <span className="search-placeholder">종목명을 검색하세요</span>
-                        </div>
+                        <StockSearch/>
 
                         {loading ? (
                             <div className="login-loading">로딩...</div>

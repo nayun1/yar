@@ -1,5 +1,6 @@
 package com.yar.back.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -9,8 +10,10 @@ import jakarta.persistence.Table;
 public class Stock {
 
     @Id
+    @Column(name = "company_name")
     private String companyName;
 
+    @Column(name = "stock_code")
     private String stockCode;
 
     // Getter/Setter
