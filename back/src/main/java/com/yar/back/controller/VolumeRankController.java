@@ -23,4 +23,18 @@ public class VolumeRankController {
     public Mono<List<VolumeRankOutputDTO>> getVolumeRank() {
         return kisService.getVolumeRank();
     }
+
+    @GetMapping("/trading-value-rank")
+    public Mono<List<VolumeRankOutputDTO>> getTradingValueRank() {
+        return kisService.getTradingValueRank();
+    }
+    @GetMapping("/rise-rank")
+    public Mono<List<VolumeRankOutputDTO>> getRiseRank() {
+        return kisService.getRiseRank();
+    }
+
+    @GetMapping("/fall-rank")
+    public Mono<List<VolumeRankOutputDTO>> getFallRank() {
+        return kisService.getFallRank();
+    }
 }
