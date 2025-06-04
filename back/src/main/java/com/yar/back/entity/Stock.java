@@ -9,11 +9,24 @@ import jakarta.persistence.Table;
 public class Stock {
 
     @Id
+    private String stockCode; // 종목코드는 고유하므로 ID로 지정
+
     private String companyName;
 
-    private String stockCode;
+    private Long marketCap; // 시가총액 (억원)
 
-    // Getter/Setter
+    private String marketType; // 시장구분
+
+    // Getter / Setter
+
+    public String getStockCode() {
+        return stockCode;
+    }
+
+    public void setStockCode(String stockCode) {
+        this.stockCode = stockCode;
+    }
+
     public String getCompanyName() {
         return companyName;
     }
@@ -22,11 +35,19 @@ public class Stock {
         this.companyName = companyName;
     }
 
-    public String getStockCode() {
-        return stockCode;
+    public Long getMarketCap() {
+        return marketCap;
     }
 
-    public void setStockCode(String stockCode) {
-        this.stockCode = stockCode;
+    public void setMarketCap(Long marketCap) {
+        this.marketCap = marketCap;
+    }
+
+    public String getMarketType() {
+        return marketType;
+    }
+
+    public void setMarketType(String marketType) {
+        this.marketType = marketType;
     }
 }
