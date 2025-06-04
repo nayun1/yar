@@ -350,25 +350,25 @@ const MyAssets = () => {
     // 로그인이 필요한 경우
     if (!isLoggedIn && !loading) {
         return (
-            <div className="app-container">
+            <div className="assets-app-container">
                 {/* 헤더 */}
-                <div className="header">
-                    <div className="header-content">
-                        <div className="header-left">
-                            <div className="logo">
-                                <a href="/" className="logo-link">
-                                    <img src="/images/logo.png" alt="Young & Rich" className="logo-image"/>
+                <div className="assets-header">
+                    <div className="assets-header-content">
+                        <div className="assets-header-left">
+                            <div className="assets-logo">
+                                <a href="/" className="assets-logo-link">
+                                    <img src="/images/logo.png" alt="Young & Rich" className="assets-logo-image"/>
                                 </a>
                             </div>
-                            <nav className="main-nav">
-                                <a href="/" className="nav-item">홈</a>
-                                <span className="nav-item">뉴스</span>
-                                <span className="nav-item">관심</span>
-                                <span className="nav-item active">내 자산</span>
+                            <nav className="assets-main-nav">
+                                <a href="/" className="assets-nav-item">홈</a>
+                                <span className="assets-nav-item">뉴스</span>
+                                <span className="assets-nav-item">관심</span>
+                                <span className="assets-nav-item active">내 자산</span>
                             </nav>
                         </div>
-                        <div className="header-right">
-                            <button className="login-btn" onClick={handleLoginClick}>
+                        <div className="assets-header-right">
+                            <button className="assets-login-btn" onClick={handleLoginClick}>
                                 로그인
                             </button>
                         </div>
@@ -386,40 +386,40 @@ const MyAssets = () => {
     }
 
     return (
-        <div className="app-container">
+        <div className="assets-app-container">
             {/* 헤더 */}
-            <div className="header">
-                <div className="header-content">
-                    <div className="header-left">
-                        <div className="logo">
-                            <a href="/" className="logo-link">
-                                <img src="/images/logo.png" alt="Young & Rich" className="logo-image"/>
+            <div className="assets-header">
+                <div className="assets-header-content">
+                    <div className="assets-header-left">
+                        <div className="assets-logo">
+                            <a href="/" className="assets-logo-link">
+                                <img src="/images/logo.png" alt="Young & Rich" className="assets-logo-image"/>
                             </a>
                         </div>
-                        <nav className="main-nav">
-                            <a href="/" className="nav-item">홈</a>
-                            <span className="nav-item">관심</span>
-                            <span className="nav-item active">내 자산</span>
+                        <nav className="assets-main-nav">
+                            <a href="/" className="assets-nav-item">홈</a>
+                            <span className="assets-nav-item">관심</span>
+                            <span className="assets-nav-item active">내 자산</span>
                         </nav>
                     </div>
-                    <div className="header-right">
+                    <div className="assets-header-right">
                         {loading ? (
-                            <div className="login-loading">로딩...</div>
+                            <div className="assets-login-loading">로딩...</div>
                         ) : (
-                            <div className="user-info-container">
-                                <div className="user-profile">
+                            <div className="assets-user-info-container">
+                                <div className="assets-user-profile">
                                     {getUserProfileImage() ? (
                                         <img
                                             src={getUserProfileImage()}
                                             alt="프로필"
-                                            className="profile-image"
+                                            className="assets-profile-image"
                                         />
                                     ) : (
-                                        <User className="profile-icon" />
+                                        <User className="assets-profile-icon" />
                                     )}
-                                    <span className="user-name">{getUserDisplayName()}</span>
+                                    <span className="assets-user-name">{getUserDisplayName()}</span>
                                 </div>
-                                <button className="logout-btn" onClick={logout}>
+                                <button className="assets-logout-btn" onClick={logout}>
                                     로그아웃
                                 </button>
                             </div>
@@ -461,7 +461,7 @@ const MyAssets = () => {
 
                     {/* 주문 가능 금액 섹션 */}
                     <div className="order-available-section">
-                        <h3 className="section-title">주문 가능 금액</h3>
+                        <h3 className="assets-section-title">주문 가능 금액</h3>
 
                         <div className="order-amounts">
                             <div className="order-item">

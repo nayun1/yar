@@ -16,7 +16,7 @@ const StockTradingMain = () => {
     const [volumeRankData, setVolumeRankData] = useState([]);
     const [stockDataLoading, setStockDataLoading] = useState(true);
     const [stockDataError, setStockDataError] = useState(null);
-    const [activeFilter, setActiveFilter] = useState('거래량'); // 현재 활성 필터
+    const [activeFilter, setActiveFilter] = useState('거래량');
 
     // 인증 상태 관리
     const { isLoggedIn, userInfo, loading, logout } = useAuth();
@@ -84,7 +84,7 @@ const StockTradingMain = () => {
             change: parseFloat(item.prdyCtrt) || 0,
             volume: activeFilter === '거래대금'
                 ? Math.round((parseInt(item.acmlTrPbmn) || 0) / 100000000) // 거래대금: 억원 단위
-                : Math.round((parseInt(item.acmlVol) || 0) / 1000000 * 10) / 10 // 거래량: 백만 주 단위 (급상승/급하락 포함)
+                : Math.round((parseInt(item.acmlVol) || 0) / 1000000 * 10) / 10 // 거래량: 백만 주 단위
         }));
     };
 

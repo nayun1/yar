@@ -5,7 +5,7 @@
     padding: 0;
 }
 
-.app-container {
+.assets-app-container {
     min-height: 100vh;
     background-color: #1a1a1a;
     color: white;
@@ -14,13 +14,11 @@
 }
 
 /* 헤더 */
-.header {
-    background-color: #1a1a1a;
-    padding: 12px 24px;
-    border-bottom: 1px solid #3a3a3a;
+.assets-header {
+    padding: 2px 24px;
 }
 
-.header-content {
+.assets-header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -28,34 +26,34 @@
     margin: 0 auto;
 }
 
-.header-left {
+.assets-header-left {
     display: flex;
     align-items: center;
     gap: 32px;
 }
 
-.logo {
+.assets-logo {
     display: flex;
     align-items: center;
 }
 
-.logo-link {
+.assets-logo-link {
     text-decoration: none;
     display: flex;
     align-items: center;
 }
 
-.logo-image {
+.assets-logo-image {
     height: 70px;
     width: auto;
 }
 
-.main-nav {
+.assets-main-nav {
     display: flex;
     gap: 24px;
 }
 
-.nav-item {
+.assets-nav-item {
     text-decoration: none;
     color: #e0e0e0;
     cursor: pointer;
@@ -63,34 +61,34 @@
     padding: 8px 0;
 }
 
-.nav-item:hover {
+.assets-nav-item:hover {
     color: white;
 }
 
-.nav-item.active {
+.assets-nav-item.active {
     color: #4285f4;
     font-weight: 600;
 }
 
-.header-right {
+.assets-header-right {
     display: flex;
     align-items: center;
     gap: 24px;
 }
 
 /* 로그인 관련 스타일 */
-.login-loading {
+.assets-login-loading {
     color: #888;
     font-size: 14px;
 }
 
-.user-info-container {
+.assets-user-info-container {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.user-profile {
+.assets-user-profile {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -100,19 +98,19 @@
     color: #e0e0e0;
 }
 
-.profile-image {
+.assets-profile-image {
     width: 32px;
     height: 32px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-.profile-icon {
+.assets-profile-icon {
     width: 24px;
     height: 24px;
 }
 
-.user-name {
+.assets-user-name {
     max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -121,7 +119,7 @@
     font-weight: 500;
 }
 
-.logout-btn {
+.assets-logout-btn {
     background: none;
     border: none;
     color: #e0e0e0;
@@ -132,13 +130,13 @@
     transition: all 0.2s;
 }
 
-.logout-btn:hover {
+.assets-logout-btn:hover {
     background-color: #ff4444;
     border-color: #ff4444;
     color: white;
 }
 
-.login-btn {
+.assets-login-btn {
     background-color: transparent;
     color: #e0e0e0;
     border: none;
@@ -150,7 +148,7 @@
     transition: background-color 0.2s;
 }
 
-.login-btn:hover {
+.assets-login-btn:hover {
     background-color: #3a3a3a;
 }
 
@@ -249,7 +247,7 @@
     margin-bottom: 40px;
 }
 
-.section-title {
+.assets-section-title {
     font-size: 16px;
     font-weight: 600;
     color: white;
