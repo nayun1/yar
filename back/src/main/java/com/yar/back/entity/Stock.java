@@ -1,6 +1,5 @@
 package com.yar.back.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -11,10 +10,8 @@ public class Stock {
 
 
     @Id
-    @Column(name = "stock_code")
     private String stockCode; // 종목코드는 고유하므로 ID로 지정
 
-    @Column(name = "company_name")
     private String companyName;
 
     private Long marketCap;

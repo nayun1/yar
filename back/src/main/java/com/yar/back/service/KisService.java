@@ -56,6 +56,17 @@ public class KisService {
         return headers;
     }
 
+    private HttpHeaders createPeriodPriceHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+        headers.set("appkey", appkey);
+        headers.set("appSecret", appSecret);
+        headers.set("tr_id", "FHKST03010100");   // ※ 문서에 적힌 TR_ID
+        headers.set("custtype", "P");
+        return headers;
+    }
+
     private Mono<List<VolumeRankOutputDTO>> parseFVolumeRank(String response) {
         try {
             List<VolumeRankOutputDTO> responseDataList = new ArrayList<>();

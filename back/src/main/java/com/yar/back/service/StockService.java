@@ -32,15 +32,28 @@ public class StockService {
                 }
 
                 String[] tokens = line.split(",");
-                if (tokens.length >= 2) {
+                if (tokens.length >= 4) {
                     String stockName = tokens[0].trim();
                     String stockCode = tokens[1].trim();
+                    String marketCapStr = tokens[2].trim().replaceAll("[^\\d]", "");
+                    String marketType = tokens[3].trim();
+
+                    Long marketCap = null;
+                    try {
+                        marketCap = Long.parseLong(marketCapStr);
+                    } catch (NumberFormatException e) {
+                        System.err.println("⚠️ 시가총액 파싱 실패: " + marketCapStr);
+                    }
 
                     Stock stock = new Stock();
                     stock.setCompanyName(stockName);
                     stock.setStockCode(stockCode);
+                    stock.setMarketCap(marketCap);
+                    stock.setMarketType(marketType);
 
                     stockRepository.save(stock);
+                } else {
+                    System.out.println("⚠️ 필드 수 부족: " + line);
                 }
             }
 
