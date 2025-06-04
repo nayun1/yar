@@ -375,6 +375,31 @@ const MyAssets = () => {
                     </div>
                 </div>
 
+                {/* 로그인 안내 메시지 추가 */}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 'calc(100vh - 120px)',
+                    textAlign: 'center',
+                    color: '#888'
+                }}>
+                    <div style={{marginBottom: '16px'}}>
+                        <img
+                            src="/images/lock.png"
+                            alt="자물쇠"
+                            style={{
+                                width: '100px',
+                                height: '100px',
+                                objectFit: 'contain',
+                            }}
+                        />
+                    </div>
+                    <h2 style={{color: '#fff', marginBottom: '12px', fontSize: '20px'}}>로그인이 필요합니다</h2>
+                    <p style={{marginBottom: '24px', fontSize: '16px'}}>내 자산을 확인하려면 로그인해주세요</p>
+                </div>
+
                 {/* 로그인 모달 */}
                 <LoginModal
                     isOpen={showLoginModal}

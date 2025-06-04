@@ -201,7 +201,7 @@ const StockTradingMain = () => {
                             </a>
                         </div>
                         <nav className="main-nav">
-                            <span className="nav-item">홈</span>
+                            <span className="nav-item active">홈</span>
                             <span className="nav-item">관심</span>
                             <a href="/my-assets" className="nav-item">내 자산</a>
                         </nav>
