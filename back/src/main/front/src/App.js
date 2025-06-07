@@ -17,6 +17,7 @@ function App() {
                     <Route path="/my-assets" element={<MyAssets />} />
                     <Route path="/oauth/callback/kakao" element={<KakaoCallback />} />
                     <Route path="/volume-rank" element={<VolumeRankList />} /> {/* 추가 */}
+                    <Route path="/stock/:code" element={<StockDetailPage />}/>
                 </Routes>
 
             </div>

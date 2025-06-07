@@ -80,6 +80,7 @@ const StockTradingMain = () => {
         return apiData.map((item, index) => ({
             rank: parseInt(item.dataRank) || (index + 1),
             name: item.htsKorIsnm || '종목명 없음',
+            code: item.mkscShrnIscd || '', // 종목코드 추가
             price: parseInt(item.stckPrpr) || 0,
             change: parseFloat(item.prdyCtrt) || 0,
             volume: activeFilter === '거래대금'
@@ -306,6 +307,7 @@ const StockTradingMain = () => {
                                         <span className="rank">{stock.rank}</span>
                                         <div className="company-icon">🏢</div>
                                         <span className="name">{stock.name}</span>
+                                        <span className="code">({stock.code})</span> {/* 종목코드 추가 */}
                                     </div>
                                     <div className="price">{formatPrice(stock.price)}</div>
                                     <div className={`change ${getChangeClass(stock.change)}`}>
