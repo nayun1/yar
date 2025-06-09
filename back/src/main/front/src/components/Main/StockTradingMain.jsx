@@ -6,6 +6,7 @@ import KakaoAuth from '../../utils/KakaoAuth';
 import { fetchVolumeRank, fetchTradingValueRank, fetchRiseRank, fetchFallRank } from '../../utils/kisApi';
 import './StockTradingMain.css';
 import StockSearch from "./StockSearch";
+import {useNavigate} from 'react-router-dom';
 
 const StockTradingMain = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -20,6 +21,8 @@ const StockTradingMain = () => {
 
     // 인증 상태 관리
     const { isLoggedIn, userInfo, loading, logout } = useAuth();
+
+    const navigate = useNavigate();
 
     // 실시간 시간 업데이트
     useEffect(() => {
@@ -302,12 +305,24 @@ const StockTradingMain = () => {
                             </div>
                         ) : (
                             currentStockData.map((stock) => (
-                                <div key={stock.rank} className={`table-row ${(activeFilter === '급상승' || activeFilter === '급하락') ? 'three-columns' : ''}`}>
+                                <div
+                                    key={stock.rank}
+                                    className={`table-row ${(activeFilter === '급상승' || activeFilter === '급하락') ? 'three-columns' : ''}`}
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={() => navigate(`/stock/${stock.code}`)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            navigate(`/stock/${stock.code}`);
+                                        }
+                                    }}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <div className="stock-info">
                                         <span className="rank">{stock.rank}</span>
                                         <div className="company-icon">🏢</div>
                                         <span className="name">{stock.name}</span>
-                                        <span className="code">({stock.code})</span> {/* 종목코드 추가 */}
+                                        <span className="code">({stock.code})</span>
                                     </div>
                                     <div className="price">{formatPrice(stock.price)}</div>
                                     <div className={`change ${getChangeClass(stock.change)}`}>
@@ -315,10 +330,13 @@ const StockTradingMain = () => {
                                     </div>
                                     {(activeFilter === '거래량' || activeFilter === '거래대금') && (
                                         <div className="volume">
-                                            {activeFilter === '거래대금' ? `${stock.volume.toLocaleString()}억원` : `${stock.volume.toLocaleString()}백만 주`}
+                                            {activeFilter === '거래대금'
+                                                ? `${stock.volume.toLocaleString()}억원`
+                                                : `${stock.volume.toLocaleString()}백만 주`}
                                         </div>
                                     )}
                                 </div>
+
                             ))
                         )}
                     </div>

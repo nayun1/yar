@@ -5,6 +5,7 @@ import StockTradingMain from './components/Main/StockTradingMain';
 import MyAssets from './components/MyAssets/MyAssets';
 import KakaoCallback from './components/common/KakaoCallback';
 import VolumeRankList from './components/VolumeRankList';
+import StockDetailPage from "./components/Stock-details/StockDetailPage";
 
 import './App.css';
 
