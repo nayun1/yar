@@ -2,6 +2,7 @@ package com.yar.back.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yar.back.dto.StockDetailDTO;
 import com.yar.back.dto.VolumeRankOutputDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,13 +57,13 @@ public class KisService {
         return headers;
     }
 
-    private HttpHeaders createPeriodPriceHeaders() {
+    private HttpHeaders createStockDetailHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
         headers.set("appkey", appkey);
         headers.set("appSecret", appSecret);
-        headers.set("tr_id", "FHKST03010100");   // ※ 문서에 적힌 TR_ID
+        headers.set("tr_id", "FHKST03010100");   // 주식 일봉차트 조회용 TR_ID
         headers.set("custtype", "P");
         return headers;
     }
@@ -191,6 +192,48 @@ public class KisService {
                 .bodyToMono(String.class)
                 .flatMap(response -> parseFluctuationRank(response));
     }
+    private Mono<StockDetailDTO> parseStockPriceInfo(String response) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(response);
+            JsonNode output2Node = rootNode.get("output2");
+
+            if (output2Node != null && output2Node.isArray() && output2Node.size() > 0) {
+                JsonNode latestData = output2Node.get(0); // 가장 최근 데이터
+
+                StockDetailDTO dto = new StockDetailDTO();
+                dto.setDate(latestData.get("stck_bsop_date").asText());
+                dto.setOpenPrice(latestData.get("stck_oprc").asText());
+                dto.setHighPrice(latestData.get("stck_hgpr").asText());
+                dto.setLowPrice(latestData.get("stck_lwpr").asText());
+                dto.setClosePrice(latestData.get("stck_clpr").asText());
+                dto.setVolume(latestData.get("acml_vol").asText());
+
+                return Mono.just(dto);
+            } else {
+                return Mono.error(new RuntimeException("No stock price data found"));
+            }
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+    }
+    public Mono<StockDetailDTO> getStockDetailByCode(String code) {
+        HttpHeaders headers = createStockDetailHeaders();
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice")
+                        .queryParam("FID_COND_MRKT_DIV_CODE", "J")
+                        .queryParam("FID_INPUT_ISCD", code)
+                        .queryParam("FID_INPUT_DATE_1", "20250101")
+                        .queryParam("FID_INPUT_DATE_2", "20250609")
+                        .queryParam("FID_PERIOD_DIV_CODE", "D")
+                        .queryParam("FID_ORG_ADJ_PRC", "0")
+                        .build())
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> parseStockPriceInfo(response));
+    }
+
 
     // 편의 메서드들 추가
     public Mono<List<VolumeRankOutputDTO>> getVolumeRank() {

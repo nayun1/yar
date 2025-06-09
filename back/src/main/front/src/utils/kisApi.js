@@ -20,3 +20,7 @@ export const fetchFallRank = async () => {
     const response = await axios.get('/fall-rank');
     return response.data;
 };
+export const fetchStockDetail = async (code) => {
+    const response = await axios.get(`/stock/${code}`);
+    return response.data;
+};
