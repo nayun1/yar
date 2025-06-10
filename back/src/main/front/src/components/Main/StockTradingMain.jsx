@@ -159,6 +159,23 @@ const StockTradingMain = () => {
         KakaoAuth.login();
     };
 
+    // 종목 클릭 핸들러 추가
+    const handleStockClick = (stock) => {
+        navigate(`/stock/${stock.code}`, {
+            state: {
+                stockData: {
+                    code: stock.code,
+                    name: stock.name,
+                    price: stock.price,
+                    change: stock.change,
+                    volume: stock.volume,
+                    rank: stock.rank,
+                    filterType: activeFilter // 현재 필터 정보도 함께 전달
+                }
+            }
+        });
+    };
+
     // 필터 탭 클릭 핸들러
     const handleFilterClick = async (filterName) => {
         setActiveFilter(filterName);
@@ -310,10 +327,10 @@ const StockTradingMain = () => {
                                     className={`table-row ${(activeFilter === '급상승' || activeFilter === '급하락') ? 'three-columns' : ''}`}
                                     role="button"
                                     tabIndex={0}
-                                    onClick={() => navigate(`/stock/${stock.code}`)}
+                                    onClick={() => handleStockClick(stock)} // 수정된 부분
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter' || e.key === ' ') {
-                                            navigate(`/stock/${stock.code}`);
+                                            handleStockClick(stock); // 수정된 부분
                                         }
                                     }}
                                     style={{ cursor: 'pointer' }}
@@ -322,7 +339,6 @@ const StockTradingMain = () => {
                                         <span className="rank">{stock.rank}</span>
                                         <div className="company-icon">🏢</div>
                                         <span className="name">{stock.name}</span>
-                                        <span className="code">({stock.code})</span>
                                     </div>
                                     <div className="price">{formatPrice(stock.price)}</div>
                                     <div className={`change ${getChangeClass(stock.change)}`}>
@@ -336,7 +352,6 @@ const StockTradingMain = () => {
                                         </div>
                                     )}
                                 </div>
-
                             ))
                         )}
                     </div>
