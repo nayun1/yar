@@ -1,28 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend,
-    BarElement,
-} from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
-
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-);
 
 const TimeCandleChart = ({ stockCode }) => {
     const [candleData, setCandleData] = useState([]);
@@ -64,78 +42,121 @@ const TimeCandleChart = ({ stockCode }) => {
         return timeA.localeCompare(timeB);
     });
 
+    // 15분 간격의 시간만 필터링
+    const timeLabels = sortedData
+        .filter(data => {
+            const minutes = data.stckCntgHour.slice(2, 4);
+            return minutes === '00' || minutes === '15' || minutes === '30' || minutes === '45';
+        })
+        .map(data => `${data.stckCntgHour.slice(0, 2)}:${data.stckCntgHour.slice(2, 4)}`);
+
     // 차트 데이터 구성
-    const chartData = {
-        labels: sortedData.map(data => {
-            const time = data.stckCntgHour;
-            return `${time.slice(0, 2)}:${time.slice(2, 4)}`;
-        }),
-        datasets: [{
-            label: '가격',
-            data: sortedData.map(data => data.stckPrpr),
-            backgroundColor: sortedData.map(data => 
-                data.stckPrpr >= data.stckOprc ? 'rgba(255, 99, 132, 0.5)' : 'rgba(54, 162, 235, 0.5)'
-            ),
-            borderColor: sortedData.map(data => 
-                data.stckPrpr >= data.stckOprc ? 'rgb(255, 99, 132)' : 'rgb(54, 162, 235)'
-            ),
-            borderWidth: 1,
-            barPercentage: 0.8,
-            categoryPercentage: 0.9,
-        }]
-    };
+    const series = [{
+        data: sortedData.map(data => ({
+            x: `${data.stckCntgHour.slice(0, 2)}:${data.stckCntgHour.slice(2, 4)}`,
+            y: [data.stckOprc, data.stckHgpr, data.stckLwpr, data.stckPrpr]
+        }))
+    }];
 
     const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false,
+        chart: {
+            type: 'candlestick',
+            height: 500,
+            animations: {
+                enabled: true
             },
-            title: {
-                display: true,
-                text: '1분봉 차트',
+            toolbar: {
+                show: false
+            }
+        },
+        title: {
+            text: '1분봉 차트',
+            align: 'left'
+        },
+        xaxis: {
+            type: 'category',
+            categories: timeLabels,
+            labels: {
+                rotate: -45,
+                rotateAlways: true,
+                style: {
+                    fontSize: '12px'
+                }
             },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        const index = context.dataIndex;
-                        const data = sortedData[index];
-                        return [
-                            `시가: ${data.stckOprc.toLocaleString()}`,
-                            `고가: ${data.stckHgpr.toLocaleString()}`,
-                            `저가: ${data.stckLwpr.toLocaleString()}`,
-                            `종가: ${data.stckPrpr.toLocaleString()}`
-                        ];
-                    }
+            axisBorder: {
+                show: true
+            },
+            axisTicks: {
+                show: true
+            }
+        },
+        yaxis: {
+            position: 'right',
+            labels: {
+                formatter: function(value) {
+                    return value.toLocaleString();
                 }
             }
         },
-        scales: {
-            y: {
-                position: 'right',
-                beginAtZero: false,
-                ticks: {
-                    callback: function(value) {
-                        return value.toLocaleString();
+        tooltip: {
+            enabled: true,
+            custom: function({ seriesIndex, dataPointIndex, w }) {
+                const data = sortedData[dataPointIndex];
+                return `
+                    <div style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+                        <div style="font-weight: bold; margin-bottom: 5px;">${data.stckCntgHour.slice(0, 2)}:${data.stckCntgHour.slice(2, 4)}</div>
+                        <div style="color: #FF6384;">시가: ${data.stckOprc.toLocaleString()}</div>
+                        <div style="color: #FF6384;">고가: ${data.stckHgpr.toLocaleString()}</div>
+                        <div style="color: #36A2EB;">저가: ${data.stckLwpr.toLocaleString()}</div>
+                        <div style="color: #36A2EB;">종가: ${data.stckPrpr.toLocaleString()}</div>
+                    </div>
+                `;
+            },
+            style: {
+                fontSize: '12px',
+                fontFamily: 'Arial'
+            }
+        },
+        plotOptions: {
+            candlestick: {
+                colors: {
+                    upward: '#FF6384',
+                    downward: '#36A2EB'
+                }
+            }
+        },
+        grid: {
+            xaxis: {
+                lines: {
+                    show: false
+                }
+            },
+            yaxis: {
+                lines: {
+                    show: true,
+                    style: {
+                        colors: ['#E0E0E0'],
+                        opacity: 0.5
                     }
                 }
             },
-            x: {
-                grid: {
-                    display: false
-                },
-                ticks: {
-                    maxRotation: 45,
-                    minRotation: 45
-                }
+            padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0
             }
         }
     };
 
     return (
         <div style={{ width: '100%', height: '500px', padding: '20px' }}>
-            <Bar data={chartData} options={options} />
+            <ReactApexChart
+                options={options}
+                series={series}
+                type="candlestick"
+                height={500}
+            />
         </div>
     );
 };
