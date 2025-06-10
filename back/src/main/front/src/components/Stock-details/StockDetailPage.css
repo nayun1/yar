@@ -59,11 +59,6 @@
     color: white;
 }
 
-.stock-detail-page .nav-item.active {
-    color: #4285f4;
-    font-weight: 600;
-}
-
 .stock-detail-page .header-right {
     display: flex;
     align-items: center;
@@ -261,6 +256,7 @@
 /* 주문 패널 */
 .order-panel {
     width: 280px;
+    height: 550px;
     background: rgb(29,29,34);
     border-radius: 12px;
     padding: 20px;
@@ -268,25 +264,62 @@
 }
 
 .order-header {
-    margin-bottom: 20px;
+    margin-bottom: 13px;
 }
 
 .order-header h3 {
-    margin: 0;
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
     font-weight: 600;
     color: white;
     text-align: left;
+    flex-direction: row;
+    white-space: nowrap;
+}
+
+.order-type-tabs {
+    display: flex;
+    background: rgb(48, 48, 56);
+    border-radius: 8px;
+    padding: 2px;
+    width: 180px;
+    margin-left: 25px;
+}
+
+.order-type-tab {
+    flex: 1;
+    padding: 6px 12px;
+    background: rgb(48, 48, 56);
+    border: none;
+    border-radius: 6px;
+    color: #888;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+
+}
+
+.order-type-tab.active.buy {
+    background: rgba(208, 68, 81, 0.6);
+    color: white;
+}
+
+.order-type-tab.active.sell {
+    background: rgba(86, 132, 246, 0.6);
+    color: white;
 }
 
 .order-form-group {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .order-form-group.quantity-group {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 5px;
 }
 
 .order-form-group.quantity-group label {
@@ -294,44 +327,43 @@
     min-width: 40px;
 }
 
+.order-form-group.price-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.order-form-group.price-group label {
+    margin-bottom: 0;
+    min-width: 70px;
+}
 
 .order-form-group label {
     display: block;
-    margin-bottom: 8px;
     font-size: 13px;
     color: #e0e0e0;
     font-weight: 500;
     text-align: left;
 }
 
-.order-select {
-    width: 100%;
-    padding: 10px 12px;
-    background: #1a1a1a;
-    border: 1px solid #3a3a3a;
-    border-radius: 6px;
-    color: white;
-    font-size: 14px;
-}
-
-.order-select:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .price-type-buttons {
     display: flex;
-    gap: 8px;
+    background: rgb(48, 48, 56);
+    border-radius: 8px;
+    padding: 2px;
+    margin-bottom: 2px;
+    width: 250px;
 }
 
 .price-type-btn {
     flex: 1;
-    padding: 8px 12px;
-    background: #1a1a1a;
-    border: 1px solid #3a3a3a;
+    padding: 6px 12px;
+    background: rgb(48, 48, 56);
+    border: none;
     border-radius: 6px;
-    color: #e0e0e0;
-    font-size: 13px;
+    color: #888;
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -342,12 +374,23 @@
 }
 
 .price-type-btn.active {
-    background: #4a4a4a;
+    background: rgb(78, 78, 89);
     color: white;
-    border-color: #5a5a5a;
 }
 
-.price-input-container,
+.price-input-container {
+    display: flex;
+    align-items: center;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    padding: 8px 18px;
+    gap: 0;
+    width: 200px;
+    flex: 1;
+    margin-left: 45px;
+}
+
 .quantity-input-container {
     display: flex;
     align-items: center;
@@ -358,9 +401,19 @@
     gap: 0;
     width: 200px;
     flex: 1;
+    margin-right: 10px;
 }
 
-.price-input,
+.price-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 12px;
+    text-align: left;
+    outline: none;
+}
+
 .quantity-input {
     flex: 1;
     background: transparent;
@@ -371,20 +424,37 @@
     outline: none;
 }
 
-.price-input:disabled,
+.price-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .quantity-input:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.price-controls,
-.quantity-controls {
+.price-controls {
     display: flex;
     gap: 9px;
     margin-left: auto;
 }
 
-.price-control-btn,
+.quantity-controls {
+    display: flex;
+    gap: 9px;
+}
+
+.price-control-btn {
+    width: 15px;
+    height: 15px;
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+}
+
 .quantity-control-btn {
     width: 15px;
     height: 15px;
@@ -395,13 +465,20 @@
     display: flex;
 }
 
-.price-control-btn:disabled,
+.price-control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .quantity-control-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.price-control-btn:hover:not(:disabled),
+.price-control-btn:hover:not(:disabled) {
+    color: white;
+}
+
 .quantity-control-btn:hover:not(:disabled) {
     color: white;
 }
@@ -432,18 +509,28 @@
 }
 
 .order-btn {
-    width: 100%;
+    width: 235px;
+    height: 34px;
     padding: 12px;
     background: rgb(208, 68, 81);
     border: none;
     border-radius: 6px;
     color: white;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
     margin-bottom: 125px;
     text-align: left;
+    line-height: 11px;
+}
+
+.order-btn.sell {
+    background: rgba(86, 132, 246, 0.8);
+}
+
+.order-btn.sell:hover {
+    background: rgba(106, 142, 256, 0.8);
 }
 
 .order-btn:hover {

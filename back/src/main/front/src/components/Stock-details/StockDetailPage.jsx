@@ -1,61 +1,3 @@
-// import { useParams } from 'react-router-dom';
-// import { useEffect, useState } from 'react';
-// import axios from 'axios';
-//
-// const StockDetailPage = () => {
-//     const { code } = useParams();
-//     const [stockInfo, setStockInfo] = useState(null);
-//     const [loading, setLoading] = useState(true);
-//     const [error, setError] = useState(null);
-//
-//     useEffect(() => {
-//         const fetchStockData = async () => {
-//             try {
-//                 setLoading(true);
-//                 setError(null);
-//
-//                 const response = await axios.get(`/stock/${code}`);
-//                 console.log("받은 데이터:", response.data);
-//                 setStockInfo(response.data);
-//             } catch (err) {
-//                 console.error("주식 데이터 가져오기 실패:", err);
-//                 setError("주식 데이터를 가져오는데 실패했습니다.");
-//             } finally {
-//                 setLoading(false);
-//             }
-//         };
-//
-//         if (code) {
-//             fetchStockData();
-//         }
-//     }, [code]);
-//
-//     if (loading) {
-//         return <div>로딩 중...</div>;
-//     }
-//
-//     if (error) {
-//         return <div>{error}</div>;
-//     }
-//
-//     if (!stockInfo) {
-//         return <div>데이터가 없습니다.</div>;
-//     }
-//
-//     // 숫자 포맷팅 함수 (천단위 구분)
-//     const formatNumber = (num) => {
-//         return new Intl.NumberFormat('ko-KR').format(num);
-//     };
-//
-//     return (
-//         <div>
-//             <h1>{code} 상세 정보</h1>
-//             <p>시가: {formatNumber(stockInfo.openPrice)}원</p>
-//             <p>고가: {formatNumber(stockInfo.highPrice)}원</p>
-//             <p>저가: {formatNumber(stockInfo.lowPrice)}원</p>
-//             <p>종가: {formatNumber(stockInfo.closePrice)}원</p>
-//             <p>거래량: {formatNumber(stockInfo.volume)}</p>
-// =======
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, User, Minus, Plus } from 'lucide-react';
@@ -74,8 +16,9 @@ const StockDetailPage = () => {
     const [showLoginModal, setShowLoginModal] = useState(false);
 
     // 주문 관련 상태
+    const [orderType, setOrderType] = useState('buy'); // 'buy', 'sell', 'wait'
     const [priceType, setPriceType] = useState('지정가'); // '지정가', '시장가'
-    const [orderPrice, setOrderPrice] = useState('59,700');
+    const [orderPrice, setOrderPrice] = useState('');
     const [orderQuantity, setOrderQuantity] = useState(1);
 
     // 인증 상태 관리
@@ -102,19 +45,15 @@ const StockDetailPage = () => {
     const fetchStockDetail = async (stockCode) => {
         try {
             setLoading(true);
-            // 여기서 개별 종목 API 호출
+            // 실제 API 호출로 대체 필요
             // const response = await fetchStockDetail(stockCode);
             // setStockData(response);
 
-            // 임시로 기본값 설정 (실제로는 API 응답 사용)
-            setStockData({
-                code: stockCode,
-                name: '종목명 조회 중...',
-                price: 59700,
-                change: 2.5
-            });
+            // 임시: API 응답이 없을 경우 에러 처리
+            throw new Error('API 연결 필요');
         } catch (error) {
             console.error('종목 상세 정보 조회 실패:', error);
+            setStockData(null);
         } finally {
             setLoading(false);
         }
@@ -179,6 +118,17 @@ const StockDetailPage = () => {
         return null;
     };
 
+    // 호가 단위 계산 함수
+    const getTickSize = (price) => {
+        if (price < 2000) return 1;
+        if (price < 5000) return 5;
+        if (price < 20000) return 10;
+        if (price < 50000) return 50;
+        if (price < 200000) return 100;
+        if (price < 500000) return 500;
+        return 1000;
+    };
+
     // 주문 관련 핸들러
     const handlePriceChange = (e) => {
         const value = e.target.value.replace(/[^0-9]/g, '');
@@ -189,10 +139,21 @@ const StockDetailPage = () => {
         }
     };
 
-    const adjustPrice = (increment) => {
+    const adjustPrice = (direction) => {
         const currentPrice = parseInt(orderPrice.replace(/,/g, '')) || 0;
+        const tickSize = getTickSize(currentPrice);
+        const increment = direction > 0 ? tickSize : -tickSize;
         const newPrice = Math.max(0, currentPrice + increment);
         setOrderPrice(newPrice.toLocaleString());
+    };
+
+    const handleQuantityChange = (e) => {
+        const value = e.target.value.replace(/[^0-9]/g, '');
+        if (value) {
+            setOrderQuantity(parseInt(value));
+        } else {
+            setOrderQuantity(1);
+        }
     };
 
     const adjustQuantity = (increment) => {
@@ -213,13 +174,34 @@ const StockDetailPage = () => {
 
         // 주문 처리 로직
         console.log('주문 실행:', {
+            orderType,
             priceType,
             price: parseInt(orderPrice.replace(/,/g, '')),
             quantity: orderQuantity,
             total: calculateTotalPrice()
         });
 
-        alert('주문이 접수되었습니다.');
+        const actionText = orderType === 'buy' ? '구매' : '판매';
+        alert(`${actionText} 주문이 접수되었습니다.`);
+    };
+
+    const getOrderButtonText = () => {
+        if (!isLoggedIn) return '로그인하고 구매하기';
+        switch (orderType) {
+            case 'buy': return '구매하기';
+            case 'sell': return '판매하기';
+            default: return '구매하기';
+        }
+    };
+
+    const getOrderButtonClass = () => {
+        let baseClass = 'order-btn';
+        if (!isLoggedIn) {
+            baseClass += ' login-required';
+        } else if (orderType === 'sell') {
+            baseClass += ' sell';
+        }
+        return baseClass;
     };
 
     if (loading) {
@@ -346,7 +328,23 @@ const StockDetailPage = () => {
                     {/* 주문 패널 */}
                     <div className="order-panel">
                         <div className="order-header">
-                            <h3>주문하기</h3>
+                            <h3>
+                                주문하기
+                                <div className="order-type-tabs">
+                                    <button
+                                        className={`order-type-tab ${orderType === 'buy' ? 'active buy' : ''}`}
+                                        onClick={() => setOrderType('buy')}
+                                    >
+                                        구매
+                                    </button>
+                                    <button
+                                        className={`order-type-tab ${orderType === 'sell' ? 'active sell' : ''}`}
+                                        onClick={() => setOrderType('sell')}
+                                    >
+                                        판매
+                                    </button>
+                                </div>
+                            </h3>
                         </div>
 
                         {!isLoggedIn ? (
@@ -354,17 +352,27 @@ const StockDetailPage = () => {
                                 <div className="order-form-group price-group">
                                     <label>구매 가격</label>
                                     <div className="price-type-buttons">
-                                        <button className="price-type-btn active" disabled>지정가</button>
-                                        <button className="price-type-btn" disabled>시장가</button>
+                                        <button
+                                            className={`price-type-btn ${priceType === '지정가' ? 'active' : ''}`}
+                                            onClick={() => setPriceType('지정가')}
+                                        >
+                                            지정가
+                                        </button>
+                                        <button
+                                            className={`price-type-btn ${priceType === '시장가' ? 'active' : ''}`}
+                                            onClick={() => setPriceType('시장가')}
+                                        >
+                                            시장가
+                                        </button>
                                     </div>
                                 </div>
 
-                                <div className="order-form-group">
+                                <div className="order-form-group price-group">
                                     <div className="price-input-container">
                                         <input
                                             type="text"
                                             className="price-input"
-                                            value="59,700 원"
+                                            value={`${stockData.price.toLocaleString()} 원`}
                                             disabled
                                         />
                                         <div className="price-controls">
@@ -378,14 +386,15 @@ const StockDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="order-form-group">
+                                <div className="order-form-group quantity-group">
                                     <label>수량</label>
                                     <div className="quantity-input-container">
                                         <input
                                             type="text"
                                             className="quantity-input"
-                                            value="1 주"
-                                            disabled
+                                            value={`${orderQuantity} 주`}
+                                            onChange={handleQuantityChange}
+                                            placeholder="수량"
                                         />
                                         <div className="quantity-controls">
                                             <button className="quantity-control-btn" disabled>
@@ -405,17 +414,17 @@ const StockDetailPage = () => {
                                     </div>
                                     <div className="summary-row total">
                                         <span>총 주문 금액</span>
-                                        <span>59,700원</span>
+                                        <span>{stockData.price.toLocaleString()}원</span>
                                     </div>
                                 </div>
 
-                                <button className="order-btn login-required" onClick={handleLoginClick}>
-                                    로그인하고 구매하기
+                                <button className={getOrderButtonClass()} onClick={handleLoginClick}>
+                                    {getOrderButtonText()}
                                 </button>
                             </div>
                         ) : (
                             <div className="order-form">
-                                <div className="order-form-group">
+                                <div className="order-form-group price-group">
                                     <label>구매 가격</label>
                                     <div className="price-type-buttons">
                                         <button
@@ -433,7 +442,7 @@ const StockDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="order-form-group price-input-group">
+                                <div className="order-form-group price-group">
                                     <div className="price-input-container">
                                         <input
                                             type="text"
@@ -445,14 +454,14 @@ const StockDetailPage = () => {
                                         <div className="price-controls">
                                             <button
                                                 className="price-control-btn"
-                                                onClick={() => adjustPrice(-100)}
+                                                onClick={() => adjustPrice(-1)}
                                                 disabled={priceType === '시장가'}
                                             >
                                                 <Minus size={16}/>
                                             </button>
                                             <button
                                                 className="price-control-btn"
-                                                onClick={() => adjustPrice(100)}
+                                                onClick={() => adjustPrice(1)}
                                                 disabled={priceType === '시장가'}
                                             >
                                                 <Plus size={16}/>
@@ -468,7 +477,8 @@ const StockDetailPage = () => {
                                             type="text"
                                             className="quantity-input"
                                             value={`${orderQuantity} 주`}
-                                            readOnly
+                                            onChange={handleQuantityChange}
+                                            placeholder="수량"
                                         />
                                         <div className="quantity-controls">
                                             <button
@@ -498,8 +508,8 @@ const StockDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <button className="order-btn" onClick={handleOrder}>
-                                    주문하기
+                                <button className={getOrderButtonClass()} onClick={handleOrder}>
+                                    {getOrderButtonText()}
                                 </button>
                             </div>
                         )}
