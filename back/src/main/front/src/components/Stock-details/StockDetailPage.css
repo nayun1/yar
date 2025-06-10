@@ -1,0 +1,501 @@
+/* StockDetailPage.css */
+.stock-detail-page {
+    min-height: 100vh;
+    background-color: #1a1a1a;
+    color: white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+}
+
+/* 메인과 동일한 헤더 스타일 */
+.stock-detail-page .header {
+    padding: 2px 24px;
+}
+
+.stock-detail-page .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.stock-detail-page .header-left {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.stock-detail-page .logo {
+    display: flex;
+    align-items: center;
+}
+
+.stock-detail-page .logo-link {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.stock-detail-page .main-logo-image {
+    height: 100px;
+    width: auto;
+}
+
+.stock-detail-page .main-nav {
+    display: flex;
+    gap: 24px;
+}
+
+.stock-detail-page .nav-item {
+    color: #e0e0e0;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 8px 0;
+    text-decoration: none;
+}
+
+.stock-detail-page .nav-item:hover {
+    color: white;
+}
+
+.stock-detail-page .nav-item.active {
+    color: #4285f4;
+    font-weight: 600;
+}
+
+.stock-detail-page .header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.stock-detail-page .user-info-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.stock-detail-page .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: transparent;
+    border-radius: 6px;
+    color: #e0e0e0;
+}
+
+.stock-detail-page .profile-image {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.stock-detail-page .profile-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.stock-detail-page .user-name {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 500;
+    padding-left: 2px;
+}
+
+.stock-detail-page .login-btn {
+    background-color: transparent;
+    color: #e0e0e0;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.stock-detail-page .login-btn:hover {
+    background-color: #3a3a3a;
+}
+
+.stock-detail-page .login-loading {
+    color: #888;
+    font-size: 14px;
+}
+
+.stock-detail-page .logout-btn {
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.stock-detail-page .logout-btn:hover {
+    background-color: #ff4444;
+    color: white;
+}
+
+.detail-container {
+    max-width: 78%;
+    margin: 0 auto;
+    padding: 20px 13px;
+}
+
+/* 종목 정보 카드 */
+.detail-stock-info-card {
+    background: transparent;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.detail-stock-basic-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.detail-stock-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.detail-stock-title h2 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+}
+
+.detail-stock-code {
+    color: #888;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.detail-stock-price-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.detail-current-price {
+    font-size: 21px;
+    font-weight: 700;
+    color: white;
+}
+
+.detail-price-change {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.detail-change-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.detail-change-positive {
+    color: #ff4444;
+}
+
+.detail-change-negative {
+    color: #4285f4;
+}
+
+.detail-change-neutral {
+    color: #888;
+}
+
+/* 메인 콘텐츠 레이아웃 */
+.detail-main-content {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+/* 차트 섹션 */
+.detail-chart-section {
+    flex: 1;
+    background: transparent;
+    border-radius: 12px;
+}
+
+.detail-chart-header {
+    padding-top: 30px;
+    padding-bottom: 16px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.detail-chart-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+.detail-chart-placeholder {
+    height: 550px;
+    background: rgb(29,29,34);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 14px;
+}
+
+/* 주문 패널 */
+.order-panel {
+    width: 280px;
+    background: rgb(29,29,34);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 62px;
+}
+
+.order-header {
+    margin-bottom: 20px;
+}
+
+.order-header h3 {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    text-align: left;
+}
+
+.order-form-group {
+    margin-bottom: 16px;
+}
+
+.order-form-group.quantity-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.order-form-group.quantity-group label {
+    margin-bottom: 0;
+    min-width: 40px;
+}
+
+
+.order-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #e0e0e0;
+    font-weight: 500;
+    text-align: left;
+}
+
+.order-select {
+    width: 100%;
+    padding: 10px 12px;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+}
+
+.order-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.price-type-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.price-type-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    color: #e0e0e0;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.price-type-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.price-type-btn.active {
+    background: #4a4a4a;
+    color: white;
+    border-color: #5a5a5a;
+}
+
+.price-input-container,
+.quantity-input-container {
+    display: flex;
+    align-items: center;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    border-radius: 10px;
+    padding: 8px 18px;
+    gap: 0;
+    width: 200px;
+    flex: 1;
+}
+
+.price-input,
+.quantity-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 12px;
+    text-align: left;
+    outline: none;
+}
+
+.price-input:disabled,
+.quantity-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.price-controls,
+.quantity-controls {
+    display: flex;
+    gap: 9px;
+    margin-left: auto;
+}
+
+.price-control-btn,
+.quantity-control-btn {
+    width: 15px;
+    height: 15px;
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+}
+
+.price-control-btn:disabled,
+.quantity-control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.price-control-btn:hover:not(:disabled),
+.quantity-control-btn:hover:not(:disabled) {
+    color: white;
+}
+
+.order-summary {
+    border-top: 1px solid #3a3a3a;
+    padding-top: 16px;
+    margin-bottom: 20px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 13px;
+}
+
+.summary-row:first-child {
+    color: #888;
+}
+
+.summary-row.total {
+    font-weight: 600;
+    font-size: 14px;
+    color: white;
+    padding-top: 13px;
+}
+
+.order-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgb(208, 68, 81);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 125px;
+    text-align: left;
+}
+
+.order-btn:hover {
+    background: rgb(210, 91, 101);
+}
+
+.order-btn.login-required {
+    background: rgb(208, 68, 81);
+}
+
+.order-btn.login-required:hover {
+    background: rgb(210, 91, 101);
+}
+
+/* 로딩 및 에러 상태 */
+.detail-loading-container,
+.detail-error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    background: transparent;
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.detail-loading-container p {
+    color: #888;
+    font-size: 16px;
+}
+
+.detail-error-container p {
+    color: #ff6b6b;
+    font-size: 16px;
+    margin: 0 0 16px 0;
+}
+
+.detail-error-button {
+    padding: 10px 20px;
+    background: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.detail-error-button:hover {
+    background: #3367d6;
+}
