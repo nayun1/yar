@@ -1,22 +1,20 @@
 package com.yar.back.repository;
 
 import com.yar.back.entity.Stock;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface StockRepository extends JpaRepository<Stock, String> {
 
-    // 종목 검색 - 회사명으로 검색 (대소문자 무시, LIKE 검색)
-    @Query("SELECT s FROM Stock s WHERE LOWER(s.companyName) LIKE LOWER(CONCAT('%', :name, '%'))")
-    List<Stock> findByCompanyNameContainingIgnoreCase(@Param("name") String name, Pageable pageable);
+    // 회사명으로 검색 (검색 기능용)
+    @Query("SELECT s FROM Stock s WHERE s.companyName LIKE %:name% ORDER BY " +
+            "CASE WHEN s.companyName = :name THEN 0 ELSE 1 END, s.marketCap DESC")
+    List<Stock> findByCompanyName(@Param("name") String name);
 
-    // 종목코드로 정확한 종목 조회
+    // 종목코드로 정확한 종목 조회 (상세보기용)
     Optional<Stock> findByStockCode(String stockCode);
 }

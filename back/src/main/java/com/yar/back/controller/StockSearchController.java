@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/stocks")
-@CrossOrigin(origins = "http://localhost:3000")
 public class StockSearchController {
 
     private final StockService stockService;
@@ -20,7 +19,7 @@ public class StockSearchController {
         this.stockService = stockService;
     }
 
-    // 검색 기능 - 기본 Stock 엔티티 반환 (검색용)
+    // 검색 기능 - 기본 Stock 엔티티 반환
     @GetMapping("/search")
     public ResponseEntity<List<Stock>> searchStocks(@RequestParam("name") String name) {
         try {
@@ -32,7 +31,7 @@ public class StockSearchController {
         }
     }
 
-    // 종목 상세 정보 조회 - 실시간 데이터 포함 StockDTO 반환
+    // 종목 상세 정보 조회
     @GetMapping("/detail/{stockCode}")
     public ResponseEntity<StockDTO> getStockDetail(@PathVariable("stockCode") String stockCode) {
         try {
@@ -47,11 +46,5 @@ public class StockSearchController {
             System.err.println("❌ 종목 상세 조회 실패: " + e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    // 헬스체크
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Stock Search API is running");
     }
 }

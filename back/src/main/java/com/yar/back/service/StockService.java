@@ -6,8 +6,6 @@ import com.yar.back.repository.StockRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -24,8 +22,6 @@ public class StockService {
 
     @Autowired
     private KisService kisService;
-
-    private static final int SEARCH_LIMIT = 50;
 
     public StockService(StockRepository stockRepository) {
         this.stockRepository = stockRepository;
@@ -95,8 +91,7 @@ public class StockService {
 
     // 검색 기능 - 기본 Stock 엔티티 반환
     public List<Stock> searchStockByName(String name) {
-        Pageable pageable = PageRequest.of(0, SEARCH_LIMIT);
-        return stockRepository.findByCompanyNameContainingIgnoreCase(name, pageable);
+        return stockRepository.findByCompanyName(name);
     }
 
     // 종목 상세 정보 조회 - 실시간 데이터 포함 StockDTO 반환
