@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 public class VolumeRankController {
 
-    private KisService kisService;
+    private final KisService kisService;
 
     @Autowired
     public VolumeRankController(KisService kisService) {
@@ -28,6 +28,7 @@ public class VolumeRankController {
     public Mono<List<VolumeRankOutputDTO>> getTradingValueRank() {
         return kisService.getTradingValueRank();
     }
+
     @GetMapping("/rise-rank")
     public Mono<List<VolumeRankOutputDTO>> getRiseRank() {
         return kisService.getRiseRank();

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './StockSearch.css';
 
@@ -8,8 +9,33 @@ const StockSearch = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [recentSearches, setRecentSearches] = useState([]);
     const searchRef = useRef(null);
+    const searchTimeoutRef = useRef(null);
+    const navigate = useNavigate();
 
-    // 컴포넌트 마운트 시 최근 검색어 불러오기
+    // 시장 타입별 아이콘
+    const getMarketIcon = (marketType) => {
+        if (!marketType) return "❓";
+
+        switch (marketType.trim()) {
+            case "유가증권":
+            case "유가증권시장":
+                return "🏛️";
+            case "코스닥":
+                return "🟡";
+            case "코넥스":
+                return "🟢";
+            case "ETF":
+                return "📈";
+            case "ETN":
+                return "📊";
+            case "ELW":
+                return "💎";
+            default:
+                return "❓";
+        }
+    };
+
+    // 최근 검색어 불러오기
     useEffect(() => {
         const savedSearches = localStorage.getItem('recentStockSearches');
         if (savedSearches) {
@@ -26,47 +52,69 @@ const StockSearch = () => {
         };
 
         document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // 컴포넌트 언마운트 시 타이머 정리
+    useEffect(() => {
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
         };
     }, []);
 
-    // 검색 실행 (최근 검색어에 저장하지 않음)
+    // 검색 API 호출
     const handleSearch = async (searchQuery = query) => {
-        if (!searchQuery.trim()) return;
+        if (!searchQuery.trim()) {
+            setResults([]);
+            return;
+        }
 
         try {
             const res = await axios.get(`/api/stocks/search`, {
                 params: { name: searchQuery }
             });
-
-            console.log("검색 결과:", res.data);
             setResults(res.data);
-
         } catch (error) {
             console.error("검색 에러:", error);
+            setResults([]);
         }
     };
 
-    // 최근 검색어에 추가하는 별도 함수
+    // 디바운스된 검색
+    const debouncedSearch = useCallback((searchQuery) => {
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        searchTimeoutRef.current = setTimeout(() => {
+            handleSearch(searchQuery);
+        }, 300);
+    }, []);
+
+    // 최근 검색어 추가
     const addToRecentSearches = (searchTerm) => {
         const newRecentSearches = [
             searchTerm,
             ...recentSearches.filter(item => item !== searchTerm)
-        ].slice(0, 5); // 최대 5개까지만 저장
+        ].slice(0, 5);
 
         setRecentSearches(newRecentSearches);
         localStorage.setItem('recentStockSearches', JSON.stringify(newRecentSearches));
     };
 
-    // 입력값 변경 시 실시간 검색
+    // 입력값 변경 처리
     const handleInputChange = (e) => {
         const value = e.target.value;
         setQuery(value);
 
         if (value.trim()) {
-            handleSearch(value);
+            debouncedSearch(value);
         } else {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
             setResults([]);
         }
     };
@@ -82,7 +130,17 @@ const StockSearch = () => {
         handleSearch(searchTerm);
     };
 
-    // 검색어 하이라이트 함수
+    // 엔터키 처리
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+            handleSearch(query);
+        }
+    };
+
+    // 검색어 하이라이트
     const highlightSearchTerm = (text, searchTerm) => {
         if (!searchTerm) return text;
 
@@ -91,24 +149,20 @@ const StockSearch = () => {
 
         return parts.map((part, index) =>
             regex.test(part) ?
-                <span key={index} style={{ color: '#4A90E2' }}>{part}</span> :
+                <span key={index} style={{ color: '#4A90E2', fontWeight: 'bold' }}>{part}</span> :
                 part
         );
     };
 
-    // 주식 항목 클릭 (최근 검색어에 추가)
+    // 주식 항목 클릭 - 상세 페이지로 이동
     const handleStockClick = (stock) => {
-        console.log("선택된 주식:", stock);
         setQuery(stock.companyName);
         setIsOpen(false);
-
-        // 선택된 주식만 최근 검색어에 추가
         addToRecentSearches(stock.companyName);
-
-        // 여기에 주식 선택 후 동작 추가 (예: 상세 페이지 이동 등)
+        navigate(`/stock/${stock.stockCode}`);
     };
 
-    // 최근 검색어 삭제
+    // 최근 검색어 전체 삭제
     const clearRecentSearches = () => {
         setRecentSearches([]);
         localStorage.removeItem('recentStockSearches');
@@ -116,7 +170,7 @@ const StockSearch = () => {
 
     // 개별 최근 검색어 삭제
     const removeRecentSearch = (indexToRemove, e) => {
-        e.stopPropagation(); // 클릭 이벤트 버블링 방지
+        e.stopPropagation();
         const newRecentSearches = recentSearches.filter((_, index) => index !== indexToRemove);
         setRecentSearches(newRecentSearches);
         localStorage.setItem('recentStockSearches', JSON.stringify(newRecentSearches));
@@ -130,6 +184,7 @@ const StockSearch = () => {
                     value={query}
                     onChange={handleInputChange}
                     onClick={handleInputClick}
+                    onKeyPress={handleKeyPress}
                     placeholder="종목명을 입력하세요"
                     className="search-input"
                 />
@@ -169,7 +224,7 @@ const StockSearch = () => {
                         </div>
                     )}
 
-                    {/* 종목 섹션 */}
+                    {/* 검색 결과 섹션 */}
                     {query && results.length > 0 && (
                         <div className="search-results-section">
                             <div className="section-header">
@@ -182,7 +237,9 @@ const StockSearch = () => {
                                         className="search-result-item"
                                         onClick={() => handleStockClick(stock)}
                                     >
-                                        <div className="search-stock-icon">📈</div>
+                                        <div className="search-stock-icon">
+                                            {getMarketIcon(stock.marketType)}
+                                        </div>
                                         <div className="search-stock-info">
                                             <div className="search-stock-name">
                                                 {highlightSearchTerm(stock.companyName, query)}
@@ -202,7 +259,7 @@ const StockSearch = () => {
                         </div>
                     )}
 
-                    {/* 초기 상태 (검색어 없고 최근 검색도 없음) */}
+                    {/* 초기 상태 */}
                     {!query && recentSearches.length === 0 && (
                         <div className="empty-state">
                             <span>종목명을 입력하세요</span>
