@@ -1,3 +1,4 @@
+//Stock.java
 package com.yar.back.entity;
 
 import jakarta.persistence.*;

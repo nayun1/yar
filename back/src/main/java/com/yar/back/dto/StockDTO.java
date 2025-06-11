@@ -1,3 +1,4 @@
+//StockDTO.java
 package com.yar.back.dto;
 
 import com.yar.back.entity.Stock;
