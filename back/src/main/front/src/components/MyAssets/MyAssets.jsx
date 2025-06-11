@@ -362,8 +362,6 @@ const MyAssets = () => {
                             </div>
                             <nav className="assets-main-nav">
                                 <a href="/" className="assets-nav-item">홈</a>
-                                <span className="assets-nav-item">뉴스</span>
-                                <span className="assets-nav-item">관심</span>
                                 <span className="assets-nav-item active">내 자산</span>
                             </nav>
                         </div>
@@ -423,7 +421,6 @@ const MyAssets = () => {
                         </div>
                         <nav className="assets-main-nav">
                             <a href="/" className="assets-nav-item">홈</a>
-                            <span className="assets-nav-item">관심</span>
                             <span className="assets-nav-item active">내 자산</span>
                         </nav>
                     </div>

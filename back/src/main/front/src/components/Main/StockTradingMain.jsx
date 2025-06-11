@@ -24,6 +24,29 @@ const StockTradingMain = () => {
 
     const navigate = useNavigate();
 
+    // 시장 타입에 따른 아이콘 매핑 함수 추가
+    const getMarketIcon = (marketType) => {
+        if (!marketType) return "❓";
+
+        switch (marketType.trim()) {
+            case "유가증권":
+            case "유가증권시장":
+                return "🏛️";
+            case "코스닥":
+                return "🟡";
+            case "코넥스":
+                return "🟢";
+            case "ETF":
+                return "📈";
+            case "ETN":
+                return "📊";
+            case "ELW":
+                return "💎";
+            default:
+                return "❓";
+        }
+    };
+
     // 실시간 시간 업데이트
     useEffect(() => {
         const timer = setInterval(() => {
@@ -88,7 +111,9 @@ const StockTradingMain = () => {
             change: parseFloat(item.prdyCtrt) || 0,
             volume: activeFilter === '거래대금'
                 ? Math.round((parseInt(item.acmlTrPbmn) || 0) / 100000000) // 거래대금: 억원 단위
-                : Math.round((parseInt(item.acmlVol) || 0) / 1000000 * 10) / 10 // 거래량: 백만 주 단위
+                : Math.round((parseInt(item.acmlVol) || 0) / 1000000 * 10) / 10, // 거래량: 백만 주 단위
+            // 시장 타입 추가 (API에서 제공되지 않으면 기본값 사용)
+            marketType: item.marketType || "유가증권" // API에 marketType이 없으면 기본값
         }));
     };
 
@@ -223,7 +248,6 @@ const StockTradingMain = () => {
                         </div>
                         <nav className="main-nav">
                             <span className="nav-item active">홈</span>
-                            <span className="nav-item">관심</span>
                             <a href="/my-assets" className="nav-item">내 자산</a>
                         </nav>
                     </div>
@@ -327,17 +351,17 @@ const StockTradingMain = () => {
                                     className={`table-row ${(activeFilter === '급상승' || activeFilter === '급하락') ? 'three-columns' : ''}`}
                                     role="button"
                                     tabIndex={0}
-                                    onClick={() => handleStockClick(stock)} // 수정된 부분
+                                    onClick={() => handleStockClick(stock)}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter' || e.key === ' ') {
-                                            handleStockClick(stock); // 수정된 부분
+                                            handleStockClick(stock);
                                         }
                                     }}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <div className="stock-info">
                                         <span className="rank">{stock.rank}</span>
-                                        <div className="company-icon">🏢</div>
+                                        <div className="company-icon">{getMarketIcon(stock.marketType)}</div>
                                         <span className="name">{stock.name}</span>
                                     </div>
                                     <div className="price">{formatPrice(stock.price)}</div>

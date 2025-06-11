@@ -251,4 +251,88 @@ public class KisService {
     public Mono<List<VolumeRankOutputDTO>> getFallRank() {
         return getFluctuationRankData("1"); // 급하락
     }
+    // 기존 KisService.java에 다음 메서드들을 추가하세요
+
+    // 실시간 현재가 조회용 헤더 생성
+    private HttpHeaders createCurrentPriceHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+        headers.set("appkey", appkey);
+        headers.set("appSecret", appSecret);
+        headers.set("tr_id", "FHKST01010100");   // 주식 현재가 시세 조회용 TR_ID
+        headers.set("custtype", "P");
+        return headers;
+    }
+
+    // 현재가 응답 파싱용 DTO 클래스 (기존 StockDTO에 맞춤)
+    public static class RealTimeStockData {
+        private String currentPrice;    // 현재가
+        private String changeRate;      // 등락률
+        private String changeAmount;    // 등락금액
+        private String volume;          // 거래량
+        private String tradingValue;    // 거래대금
+
+        // 생성자
+        public RealTimeStockData(String currentPrice, String changeRate, String changeAmount,
+                                 String volume, String tradingValue) {
+            this.currentPrice = currentPrice;
+            this.changeRate = changeRate;
+            this.changeAmount = changeAmount;
+            this.volume = volume;
+            this.tradingValue = tradingValue;
+        }
+
+        // Getter들
+        public String getCurrentPrice() { return currentPrice; }
+        public String getChangeRate() { return changeRate; }
+        public String getChangeAmount() { return changeAmount; }
+        public String getVolume() { return volume; }
+        public String getTradingValue() { return tradingValue; }
+    }
+
+    // 현재가 응답 파싱 메서드
+    private Mono<RealTimeStockData> parseCurrentPrice(String response) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(response);
+            JsonNode outputNode = rootNode.get("output");
+
+            if (outputNode != null) {
+                String currentPrice = outputNode.get("stck_prpr").asText();           // 현재가
+                String changeRate = outputNode.get("prdy_ctrt").asText();             // 등락률
+                String changeAmount = outputNode.get("prdy_vrss").asText();           // 등락금액
+                String volume = outputNode.get("acml_vol").asText();                  // 거래량
+                String tradingValue = outputNode.get("acml_tr_pbmn").asText();        // 거래대금
+
+                RealTimeStockData data = new RealTimeStockData(
+                        currentPrice, changeRate, changeAmount, volume, tradingValue
+                );
+
+                return Mono.just(data);
+            } else {
+                return Mono.error(new RuntimeException("No current price data found"));
+            }
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+    }
+
+    // 개별 종목 실시간 현재가 조회 메서드
+    public Mono<RealTimeStockData> getRealTimeStockData(String stockCode) {
+        HttpHeaders headers = createCurrentPriceHeaders();
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/quotations/inquire-price")
+                        .queryParam("FID_COND_MRKT_DIV_CODE", "J")
+                        .queryParam("FID_INPUT_ISCD", stockCode)
+                        .build())
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> parseCurrentPrice(response))
+                .onErrorResume(error -> {
+                    System.err.println("❌ 실시간 데이터 조회 실패 - 종목코드: " + stockCode + ", 오류: " + error.getMessage());
+                    return Mono.empty(); // 에러 시 empty 반환
+                });
+    }
 }

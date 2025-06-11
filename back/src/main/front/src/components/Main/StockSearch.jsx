@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './StockSearch.css';
 
@@ -8,6 +9,33 @@ const StockSearch = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [recentSearches, setRecentSearches] = useState([]);
     const searchRef = useRef(null);
+    const navigate = useNavigate();
+
+    // 디바운싱을 위한 타이머 ref
+    const searchTimeoutRef = useRef(null);
+
+    // 시장 타입에 따른 아이콘 매핑 함수 추가
+    const getMarketIcon = (marketType) => {
+        if (!marketType) return "❓";
+
+        switch (marketType.trim()) {
+            case "유가증권":
+            case "유가증권시장":
+                return "🏛️";
+            case "코스닥":
+                return "🟡";
+            case "코넥스":
+                return "🟢";
+            case "ETF":
+                return "📈";
+            case "ETN":
+                return "📊";
+            case "ELW":
+                return "💎";
+            default:
+                return "❓";
+        }
+    };
 
     // 컴포넌트 마운트 시 최근 검색어 불러오기
     useEffect(() => {
@@ -33,7 +61,10 @@ const StockSearch = () => {
 
     // 검색 실행 (최근 검색어에 저장하지 않음)
     const handleSearch = async (searchQuery = query) => {
-        if (!searchQuery.trim()) return;
+        if (!searchQuery.trim()) {
+            setResults([]);
+            return;
+        }
 
         try {
             const res = await axios.get(`/api/stocks/search`, {
@@ -48,25 +79,43 @@ const StockSearch = () => {
         }
     };
 
+    // 디바운스된 검색 함수
+    const debouncedSearch = useCallback((searchQuery) => {
+        // 기존 타이머 클리어
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current);
+        }
+
+        // 새로운 타이머 설정 (500ms 후 검색 실행)
+        searchTimeoutRef.current = setTimeout(() => {
+            handleSearch(searchQuery);
+        }, 500); // 500ms 대기
+    }, []);
+
     // 최근 검색어에 추가하는 별도 함수
     const addToRecentSearches = (searchTerm) => {
         const newRecentSearches = [
             searchTerm,
             ...recentSearches.filter(item => item !== searchTerm)
-        ].slice(0, 5); // 최대 5개까지만 저장
+        ].slice(0, 5);
 
         setRecentSearches(newRecentSearches);
         localStorage.setItem('recentStockSearches', JSON.stringify(newRecentSearches));
     };
 
-    // 입력값 변경 시 실시간 검색
+    // 입력값 변경 시 디바운스된 검색
     const handleInputChange = (e) => {
         const value = e.target.value;
         setQuery(value);
 
         if (value.trim()) {
-            handleSearch(value);
+            // 즉시 검색하지 않고 디바운스된 검색 사용
+            debouncedSearch(value);
         } else {
+            // 기존 타이머 클리어
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
             setResults([]);
         }
     };
@@ -79,7 +128,19 @@ const StockSearch = () => {
     // 최근 검색어 클릭
     const handleRecentSearchClick = (searchTerm) => {
         setQuery(searchTerm);
+        // 즉시 검색 (디바운싱 없이)
         handleSearch(searchTerm);
+    };
+
+    // 엔터키 처리 (즉시 검색)
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            // 기존 타이머 클리어하고 즉시 검색
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+            handleSearch(query);
+        }
     };
 
     // 검색어 하이라이트 함수
@@ -96,7 +157,7 @@ const StockSearch = () => {
         );
     };
 
-    // 주식 항목 클릭 (최근 검색어에 추가)
+    // 주식 항목 클릭 (상세 페이지로 이동 추가)
     const handleStockClick = (stock) => {
         console.log("선택된 주식:", stock);
         setQuery(stock.companyName);
@@ -105,7 +166,8 @@ const StockSearch = () => {
         // 선택된 주식만 최근 검색어에 추가
         addToRecentSearches(stock.companyName);
 
-        // 여기에 주식 선택 후 동작 추가 (예: 상세 페이지 이동 등)
+        // 상세 페이지로 이동
+        navigate(`/stock/${stock.stockCode}`);
     };
 
     // 최근 검색어 삭제
@@ -116,11 +178,20 @@ const StockSearch = () => {
 
     // 개별 최근 검색어 삭제
     const removeRecentSearch = (indexToRemove, e) => {
-        e.stopPropagation(); // 클릭 이벤트 버블링 방지
+        e.stopPropagation();
         const newRecentSearches = recentSearches.filter((_, index) => index !== indexToRemove);
         setRecentSearches(newRecentSearches);
         localStorage.setItem('recentStockSearches', JSON.stringify(newRecentSearches));
     };
+
+    // 컴포넌트 언마운트 시 타이머 정리
+    useEffect(() => {
+        return () => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current);
+            }
+        };
+    }, []);
 
     return (
         <div className="stock-search-container" ref={searchRef}>
@@ -130,6 +201,7 @@ const StockSearch = () => {
                     value={query}
                     onChange={handleInputChange}
                     onClick={handleInputClick}
+                    onKeyPress={handleKeyPress}
                     placeholder="종목명을 입력하세요"
                     className="search-input"
                 />
@@ -182,7 +254,7 @@ const StockSearch = () => {
                                         className="search-result-item"
                                         onClick={() => handleStockClick(stock)}
                                     >
-                                        <div className="search-stock-icon">📈</div>
+                                        <div className="search-stock-icon">{getMarketIcon(stock.marketType)}</div>
                                         <div className="search-stock-info">
                                             <div className="search-stock-name">
                                                 {highlightSearchTerm(stock.companyName, query)}

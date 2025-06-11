@@ -14,12 +14,13 @@ const StockDetailPage = () => {
     const [stockData, setStockData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showQuantityAlert, setShowQuantityAlert] = useState(false);
 
     // 주문 관련 상태
-    const [orderType, setOrderType] = useState('buy'); // 'buy', 'sell', 'wait'
+    const [orderType, setOrderType] = useState('buy'); // 'buy', 'sell'
     const [priceType, setPriceType] = useState('지정가'); // '지정가', '시장가'
     const [orderPrice, setOrderPrice] = useState('');
-    const [orderQuantity, setOrderQuantity] = useState(1);
+    const [orderQuantity, setOrderQuantity] = useState(''); // 빈 문자열로 초기화
 
     // 인증 상태 관리
     const { isLoggedIn, userInfo, loading: authLoading, logout } = useAuth();
@@ -35,22 +36,74 @@ const StockDetailPage = () => {
         }
     }, [code, location.state]);
 
-    // 주식 데이터가 로드되면 주문 가격 초기화
+    // 주식 데이터가 로드되면 주문 가격 초기화 (한번만)
     useEffect(() => {
-        if (stockData && stockData.price) {
+        if (stockData && stockData.price && orderPrice === '') {
             setOrderPrice(stockData.price.toLocaleString());
         }
     }, [stockData]);
 
+    // 10초마다 주가 정보 자동 새로고침
+    useEffect(() => {
+        if (!stockData?.code) return;
+
+        const interval = setInterval(async () => {
+            try {
+                const response = await fetch(`/api/stocks/detail/${stockData.code}`);
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // 현재가와 등락률만 업데이트 (주문 가격은 건드리지 않음)
+                    setStockData(prevData => ({
+                        ...prevData,
+                        price: parseInt(data.currentPrice?.replace(/,/g, '') || prevData.price),
+                        change: parseFloat(data.changeRate?.replace('%', '') || prevData.change),
+                        currentPrice: data.currentPrice,
+                        changeRate: data.changeRate,
+                        changeAmount: data.changeAmount,
+                        volume: data.volume,
+                        tradingValue: data.tradingValue
+                    }));
+                }
+            } catch (error) {
+                console.error('주가 자동 새로고침 실패:', error);
+            }
+        }, 10000);
+
+        return () => clearInterval(interval);
+    }, [stockData?.code]);
+
     const fetchStockDetail = async (stockCode) => {
         try {
             setLoading(true);
-            // 실제 API 호출로 대체 필요
-            // const response = await fetchStockDetail(stockCode);
-            // setStockData(response);
 
-            // 임시: API 응답이 없을 경우 에러 처리
-            throw new Error('API 연결 필요');
+            // 새로운 API 엔드포인트 호출
+            const response = await fetch(`/api/stocks/detail/${stockCode}`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // 백엔드 DTO 필드명을 프론트엔드 형식으로 변환
+            const transformedData = {
+                name: data.companyName,        // companyName -> name
+                code: data.stockCode,          // stockCode -> code
+                price: parseInt(data.currentPrice?.replace(/,/g, '') || '0'), // 현재가
+                change: parseFloat(data.changeRate?.replace('%', '') || '0'),  // 등락률
+                marketIcon: data.marketIcon,
+                // 실시간 데이터
+                currentPrice: data.currentPrice,
+                changeRate: data.changeRate,
+                changeAmount: data.changeAmount,
+                volume: data.volume,
+                tradingValue: data.tradingValue,
+                isRealTimeAvailable: data.isRealTimeAvailable
+            };
+
+            setStockData(transformedData);
+
         } catch (error) {
             console.error('종목 상세 정보 조회 실패:', error);
             setStockData(null);
@@ -131,39 +184,46 @@ const StockDetailPage = () => {
 
     // 주문 관련 핸들러
     const handlePriceChange = (e) => {
-        const value = e.target.value.replace(/[^0-9]/g, '');
-        if (value) {
-            setOrderPrice(parseInt(value).toLocaleString());
+        const fullValue = e.target.value;
+        // "원"을 제거하고 숫자만 추출
+        const rawValue = fullValue.replace(/[^0-9]/g, '');
+        if (rawValue === '') {
+            setOrderPrice('0');
         } else {
-            setOrderPrice('');
+            setOrderPrice(parseInt(rawValue).toLocaleString());
         }
     };
 
     const adjustPrice = (direction) => {
         const currentPrice = parseInt(orderPrice.replace(/,/g, '')) || 0;
-        const tickSize = getTickSize(currentPrice);
+        const tickSize = getTickSize(stockData.price); // 주식의 현재 주가 기준으로 호가 단위 결정
         const increment = direction > 0 ? tickSize : -tickSize;
         const newPrice = Math.max(0, currentPrice + increment);
         setOrderPrice(newPrice.toLocaleString());
     };
 
     const handleQuantityChange = (e) => {
-        const value = e.target.value.replace(/[^0-9]/g, '');
-        if (value) {
-            setOrderQuantity(parseInt(value));
-        } else {
-            setOrderQuantity(1);
-        }
+        const fullValue = e.target.value;
+        // "주"를 제거하고 숫자만 추출
+        const rawValue = fullValue.replace(/[^0-9]/g, '');
+        setOrderQuantity(rawValue);
     };
 
     const adjustQuantity = (increment) => {
-        const newQuantity = Math.max(1, orderQuantity + increment);
-        setOrderQuantity(newQuantity);
+        const currentQuantity = parseInt(orderQuantity) || 0;
+        const newQuantity = Math.max(1, currentQuantity + increment);
+        setOrderQuantity(newQuantity.toString());
     };
 
     const calculateTotalPrice = () => {
-        const price = parseInt(orderPrice.replace(/,/g, '')) || 0;
-        return price * orderQuantity;
+        let price;
+        if (priceType === '시장가') {
+            price = stockData.price; // 시장가일 때는 현재가 사용
+        } else {
+            price = parseInt(orderPrice.replace(/,/g, '')) || 0; // 지정가일 때는 입력한 가격 사용
+        }
+        const quantity = parseInt(orderQuantity) || 0;
+        return price * quantity;
     };
 
     const handleOrder = () => {
@@ -172,12 +232,18 @@ const StockDetailPage = () => {
             return;
         }
 
+        // 수량이 입력되지 않았거나 0인 경우
+        if (!orderQuantity || parseInt(orderQuantity) <= 0) {
+            setShowQuantityAlert(true);
+            return;
+        }
+
         // 주문 처리 로직
         console.log('주문 실행:', {
             orderType,
             priceType,
-            price: parseInt(orderPrice.replace(/,/g, '')),
-            quantity: orderQuantity,
+            price: priceType === '시장가' ? stockData.price : parseInt(orderPrice.replace(/,/g, '')),
+            quantity: parseInt(orderQuantity),
             total: calculateTotalPrice()
         });
 
@@ -202,6 +268,11 @@ const StockDetailPage = () => {
             baseClass += ' sell';
         }
         return baseClass;
+    };
+
+    const getQuantityDisplayValue = () => {
+        if (!orderQuantity) return '';
+        return `${orderQuantity} 주`;
     };
 
     if (loading) {
@@ -247,7 +318,6 @@ const StockDetailPage = () => {
                         </div>
                         <nav className="main-nav">
                             <a href="/" className="nav-item">홈</a>
-                            <span className="nav-item">관심</span>
                             <a href="/my-assets" className="nav-item">내 자산</a>
                         </nav>
                     </div>
@@ -392,9 +462,9 @@ const StockDetailPage = () => {
                                         <input
                                             type="text"
                                             className="quantity-input"
-                                            value={`${orderQuantity} 주`}
-                                            onChange={handleQuantityChange}
-                                            placeholder="수량"
+                                            value=""
+                                            placeholder="수량 입력"
+                                            disabled
                                         />
                                         <div className="quantity-controls">
                                             <button className="quantity-control-btn" disabled>
@@ -447,9 +517,29 @@ const StockDetailPage = () => {
                                         <input
                                             type="text"
                                             className="price-input"
-                                            value={`${orderPrice} 원`}
+                                            value={priceType === '시장가' ? `${stockData.price.toLocaleString()} 원` : `${orderPrice} 원`}
                                             onChange={handlePriceChange}
                                             disabled={priceType === '시장가'}
+                                            onKeyDown={(e) => {
+                                                // 백스페이스나 Delete 키 처리
+                                                if (e.key === 'Backspace') {
+                                                    const currentValue = e.target.value;
+                                                    const cursorPosition = e.target.selectionStart;
+
+                                                    // 커서가 " 원" 부분에 있거나 그 바로 앞에 있을 때
+                                                    if (cursorPosition >= currentValue.length - 2) {
+                                                        e.preventDefault();
+                                                        // 마지막 숫자 하나 제거
+                                                        const cleanPrice = orderPrice.replace(/,/g, '');
+                                                        const newPrice = cleanPrice.slice(0, -1);
+                                                        if (newPrice === '') {
+                                                            setOrderPrice('0');
+                                                        } else {
+                                                            setOrderPrice(parseInt(newPrice).toLocaleString());
+                                                        }
+                                                    }
+                                                }
+                                            }}
                                         />
                                         <div className="price-controls">
                                             <button
@@ -476,9 +566,24 @@ const StockDetailPage = () => {
                                         <input
                                             type="text"
                                             className="quantity-input"
-                                            value={`${orderQuantity} 주`}
+                                            value={orderQuantity ? `${orderQuantity} 주` : ''}
                                             onChange={handleQuantityChange}
-                                            placeholder="수량"
+                                            placeholder="수량 입력"
+                                            onKeyDown={(e) => {
+                                                // 백스페이스나 Delete 키 처리
+                                                if (e.key === 'Backspace') {
+                                                    const currentValue = e.target.value;
+                                                    const cursorPosition = e.target.selectionStart;
+
+                                                    // 커서가 " 주" 부분에 있거나 그 바로 앞에 있을 때
+                                                    if (cursorPosition >= currentValue.length - 2) {
+                                                        e.preventDefault();
+                                                        // 마지막 숫자 하나 제거
+                                                        const newQuantity = orderQuantity.slice(0, -1);
+                                                        setOrderQuantity(newQuantity);
+                                                    }
+                                                }
+                                            }}
                                         />
                                         <div className="quantity-controls">
                                             <button
@@ -511,6 +616,20 @@ const StockDetailPage = () => {
                                 <button className={getOrderButtonClass()} onClick={handleOrder}>
                                     {getOrderButtonText()}
                                 </button>
+
+                                {/* 수량 입력 알림 토스트 */}
+                                {showQuantityAlert && (
+                                    <div className="quantity-toast">
+                                        <span className="quantity-toast-icon">💡</span>
+                                        <span className="quantity-toast-message">수량을 입력하세요.</span>
+                                        <button
+                                            className="quantity-toast-close"
+                                            onClick={() => setShowQuantityAlert(false)}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
