@@ -1,4 +1,3 @@
-//StockService.java
 package com.yar.back.service;
 
 import com.yar.back.dto.StockDTO;
@@ -16,7 +15,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class StockService {
@@ -25,10 +23,9 @@ public class StockService {
     private StockRepository stockRepository;
 
     @Autowired
-    private KisService kisService; // 한국투자증권 API 서비스
+    private KisService kisService;
 
-    private static final int SEARCH_LIMIT = 50; // 검색 결과 제한
-    private static final int MAIN_PAGE_LIMIT = 30; // 메인 페이지 표시 제한
+    private static final int SEARCH_LIMIT = 50;
 
     public StockService(StockRepository stockRepository) {
         this.stockRepository = stockRepository;
@@ -36,7 +33,6 @@ public class StockService {
 
     @PostConstruct
     public void importStockCsv() {
-        // 데이터가 이미 있으면 스킵
         if (stockRepository.count() > 0) {
             System.out.println("✅ 주식 데이터가 이미 존재합니다. CSV 로딩을 건너뜁니다.");
             return;
@@ -51,7 +47,7 @@ public class StockService {
             int errorCount = 0;
 
             while ((line = reader.readLine()) != null) {
-                if (firstLine) { // skip header
+                if (firstLine) {
                     firstLine = false;
                     continue;
                 }
@@ -64,12 +60,11 @@ public class StockService {
                         String marketCapStr = tokens[2].trim().replaceAll("[^\\d]", "");
                         String marketType = tokens[3].trim();
 
-                        Long marketCap = null;
+                        Long marketCap = 0L;
                         try {
                             marketCap = Long.parseLong(marketCapStr);
                         } catch (NumberFormatException e) {
                             System.err.println("⚠️ 시가총액 파싱 실패: " + marketCapStr);
-                            marketCap = 0L; // 기본값 설정
                         }
 
                         Stock stock = new Stock();
@@ -98,28 +93,13 @@ public class StockService {
         }
     }
 
-    // 기존 메서드 유지 (메인 검색에서 사용)
+    // 검색 기능 - 기본 Stock 엔티티 반환
     public List<Stock> searchStockByName(String name) {
-        return stockRepository.findByCompanyName(name);
+        Pageable pageable = PageRequest.of(0, SEARCH_LIMIT);
+        return stockRepository.findByCompanyNameContainingIgnoreCase(name, pageable);
     }
 
-    // 메인 페이지용 - 시가총액 상위 종목들
-    public List<StockDTO> getTopStocks() {
-        try {
-            Pageable pageable = PageRequest.of(0, MAIN_PAGE_LIMIT);
-            List<Stock> stocks = stockRepository.findTopStocksByMarketCap(pageable);
-
-            return stocks.stream()
-                    .map(this::convertToStockDTO)
-                    .collect(Collectors.toList());
-
-        } catch (Exception e) {
-            System.err.println("❌ 상위 종목 조회 중 오류 발생: " + e.getMessage());
-            return List.of();
-        }
-    }
-
-    // 종목 상세 정보 조회
+    // 종목 상세 정보 조회 - 실시간 데이터 포함 StockDTO 반환
     public Optional<StockDTO> getStockDetail(String stockCode) {
         try {
             Optional<Stock> stockOpt = stockRepository.findByStockCode(stockCode);
@@ -138,33 +118,16 @@ public class StockService {
         }
     }
 
-    // 시장구분별 종목 조회
-    public List<StockDTO> getStocksByMarketType(String marketType) {
-        try {
-            Pageable pageable = PageRequest.of(0, SEARCH_LIMIT);
-            List<Stock> stocks = stockRepository.findByMarketType(marketType, pageable);
-
-            return stocks.stream()
-                    .map(this::convertToStockDTO)
-                    .collect(Collectors.toList());
-
-        } catch (Exception e) {
-            System.err.println("❌ 시장구분별 종목 조회 중 오류 발생: " + e.getMessage());
-            return List.of();
-        }
-    }
-
     // Stock 엔티티를 StockDTO로 변환 (실시간 데이터 포함)
     private StockDTO convertToStockDTO(Stock stock) {
         try {
             StockDTO stockDTO = new StockDTO(stock);
 
-            // KisService로 실시간 데이터 조회
+            // 실시간 데이터 조회 시도
             if (kisService != null) {
                 try {
-                    // 한국투자증권 API로 실시간 데이터 조회 (동기 처리)
                     KisService.RealTimeStockData realTimeData = kisService.getRealTimeStockData(stock.getStockCode())
-                            .block(); // Mono를 동기적으로 처리
+                            .block();
 
                     if (realTimeData != null) {
                         stockDTO.setRealTimeData(
@@ -174,20 +137,17 @@ public class StockService {
                                 realTimeData.getVolume(),
                                 realTimeData.getTradingValue()
                         );
-                    } else {
-                        stockDTO.setError("실시간 데이터 조회 실패");
                     }
                 } catch (Exception e) {
-                    stockDTO.setError("실시간 데이터 조회 실패: " + e.getMessage());
+                    System.err.println("⚠️ 실시간 데이터 조회 실패 - " + stock.getStockCode() + ": " + e.getMessage());
+                    stockDTO.setError("실시간 데이터 조회 실패");
                 }
-            } else {
-                stockDTO.setError("KisService 사용 불가");
             }
 
             return stockDTO;
 
         } catch (Exception e) {
-            System.err.println("❌ StockDTO 변환 실패 - 종목코드: " + stock.getStockCode() + ", 오류: " + e.getMessage());
+            System.err.println("❌ StockDTO 변환 실패 - 종목코드: " + stock.getStockCode());
             StockDTO errorDTO = new StockDTO(stock);
             errorDTO.setError("데이터 변환 실패");
             return errorDTO;

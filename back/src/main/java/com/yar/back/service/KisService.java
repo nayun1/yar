@@ -1,11 +1,9 @@
-//KisService.java
 package com.yar.back.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yar.back.dto.StockDetailDTO;
 import com.yar.back.dto.VolumeRankOutputDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.yar.back.dto.StockDetailDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,12 +28,12 @@ public class KisService {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
 
-    @Autowired
     public KisService(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
         this.webClient = webClientBuilder.baseUrl("https://openapi.koreainvestment.com:9443").build();
         this.objectMapper = objectMapper;
     }
 
+    // 거래량/거래대금 랭킹용 헤더 생성
     private HttpHeaders createVolumeRankHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -47,33 +45,73 @@ public class KisService {
         return headers;
     }
 
+    // 급등락 랭킹용 헤더 생성
     private HttpHeaders createFluctuationRankHttpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
         headers.set("appkey", appkey);
         headers.set("appSecret", appSecret);
-        headers.set("tr_id", "FHPST01700000"); // 등락률 순위용 TR_ID
+        headers.set("tr_id", "FHPST01700000");
         headers.set("custtype", "P");
         return headers;
     }
 
+    // 주식 일봉 차트 조회용 헤더 생성
     private HttpHeaders createStockDetailHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
         headers.set("appkey", appkey);
         headers.set("appSecret", appSecret);
-        headers.set("tr_id", "FHKST03010100");   // 주식 일봉차트 조회용 TR_ID
+        headers.set("tr_id", "FHKST03010100");
         headers.set("custtype", "P");
         return headers;
     }
 
-    private Mono<List<VolumeRankOutputDTO>> parseFVolumeRank(String response) {
+    // 실시간 현재가 조회용 헤더 생성
+    private HttpHeaders createCurrentPriceHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+        headers.set("appkey", appkey);
+        headers.set("appSecret", appSecret);
+        headers.set("tr_id", "FHKST01010100");
+        headers.set("custtype", "P");
+        return headers;
+    }
+
+    // 실시간 주식 데이터 DTO
+    public static class RealTimeStockData {
+        private final String currentPrice;
+        private final String changeRate;
+        private final String changeAmount;
+        private final String volume;
+        private final String tradingValue;
+
+        public RealTimeStockData(String currentPrice, String changeRate, String changeAmount,
+                                 String volume, String tradingValue) {
+            this.currentPrice = currentPrice;
+            this.changeRate = changeRate;
+            this.changeAmount = changeAmount;
+            this.volume = volume;
+            this.tradingValue = tradingValue;
+        }
+
+        public String getCurrentPrice() { return currentPrice; }
+        public String getChangeRate() { return changeRate; }
+        public String getChangeAmount() { return changeAmount; }
+        public String getVolume() { return volume; }
+        public String getTradingValue() { return tradingValue; }
+    }
+
+    // 거래량/거래대금 랭킹 응답 파싱
+    private Mono<List<VolumeRankOutputDTO>> parseVolumeRank(String response) {
         try {
             List<VolumeRankOutputDTO> responseDataList = new ArrayList<>();
             JsonNode rootNode = objectMapper.readTree(response);
             JsonNode outputNode = rootNode.get("output");
+
             if (outputNode != null) {
                 for (JsonNode node : outputNode) {
                     VolumeRankOutputDTO responseData = new VolumeRankOutputDTO();
@@ -105,24 +143,25 @@ public class KisService {
         }
     }
 
-    // 등락률 순위 응답 파싱 메서드
+    // 급등락 랭킹 응답 파싱
     private Mono<List<VolumeRankOutputDTO>> parseFluctuationRank(String response) {
         try {
             List<VolumeRankOutputDTO> responseDataList = new ArrayList<>();
             JsonNode rootNode = objectMapper.readTree(response);
             JsonNode outputNode = rootNode.get("output");
+
             if (outputNode != null) {
                 for (JsonNode node : outputNode) {
                     VolumeRankOutputDTO responseData = new VolumeRankOutputDTO();
                     responseData.setHtsKorIsnm(node.get("hts_kor_isnm").asText());
-                    responseData.setMkscShrnIscd(node.get("stck_shrn_iscd").asText()); // 필드명 다름
+                    responseData.setMkscShrnIscd(node.get("stck_shrn_iscd").asText());
                     responseData.setDataRank(node.get("data_rank").asText());
                     responseData.setStckPrpr(node.get("stck_prpr").asText());
                     responseData.setPrdyVrssSign(node.get("prdy_vrss_sign").asText());
                     responseData.setPrdyVrss(node.get("prdy_vrss").asText());
                     responseData.setPrdyCtrt(node.get("prdy_ctrt").asText());
                     responseData.setAcmlVol(node.get("acml_vol").asText());
-                    // 나머지 필드들은 기본값으로 설정
+                    // 나머지 필드들은 빈 값으로 설정
                     responseData.setPrdyVol("");
                     responseData.setLstnStcn("");
                     responseData.setAvrgVol("");
@@ -143,56 +182,7 @@ public class KisService {
         }
     }
 
-    // 기존 getVolumeRank() 메서드를 파라미터를 받도록 수정
-    public Mono<List<VolumeRankOutputDTO>> getRankData(String blngClsCode) {
-        HttpHeaders headers = createVolumeRankHttpHeaders();
-
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/quotations/volume-rank")
-                        .queryParam("FID_COND_MRKT_DIV_CODE", "J")
-                        .queryParam("FID_COND_SCR_DIV_CODE", "20171")
-                        .queryParam("FID_INPUT_ISCD", "0000")
-                        .queryParam("FID_DIV_CLS_CODE", "0")
-                        .queryParam("FID_BLNG_CLS_CODE", blngClsCode) // 파라미터로 받음
-                        .queryParam("FID_TRGT_CLS_CODE", "111111111")
-                        .queryParam("FID_TRGT_EXLS_CLS_CODE", "000000")
-                        .queryParam("FID_INPUT_PRICE_1", "0")
-                        .queryParam("FID_INPUT_PRICE_2", "0")
-                        .queryParam("FID_VOL_CNT", "0")
-                        .queryParam("FID_INPUT_DATE_1", "0")
-                        .build())
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .retrieve()
-                .bodyToMono(String.class)
-                .flatMap(response -> parseFVolumeRank(response));
-    }
-
-    // 급상승/급하락용 범용 메서드
-    public Mono<List<VolumeRankOutputDTO>> getFluctuationRankData(String rankSortCode) {
-        HttpHeaders headers = createFluctuationRankHttpHeaders();
-
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/ranking/fluctuation")
-                        .queryParam("fid_rsfl_rate2", "")
-                        .queryParam("fid_cond_mrkt_div_code", "J")
-                        .queryParam("fid_cond_scr_div_code", "20170")
-                        .queryParam("fid_input_iscd", "0000")
-                        .queryParam("fid_rank_sort_cls_code", rankSortCode) // 0: 급상승, 1: 급하락
-                        .queryParam("fid_input_cnt_1", "0")
-                        .queryParam("fid_prc_cls_code", "1")
-                        .queryParam("fid_input_price_1", "")
-                        .queryParam("fid_input_price_2", "")
-                        .queryParam("fid_vol_cnt", "")
-                        .queryParam("fid_trgt_cls_code", "0")
-                        .queryParam("fid_trgt_exls_cls_code", "0")
-                        .queryParam("fid_div_cls_code", "0")
-                        .queryParam("fid_rsfl_rate1", "")
-                        .build())
-                .headers(httpHeaders -> httpHeaders.addAll(headers))
-                .retrieve()
-                .bodyToMono(String.class)
-                .flatMap(response -> parseFluctuationRank(response));
-    }
+    // 주식 상세 정보(일봉) 응답 파싱
     private Mono<StockDetailDTO> parseStockPriceInfo(String response) {
         try {
             JsonNode rootNode = objectMapper.readTree(response);
@@ -217,26 +207,104 @@ public class KisService {
             return Mono.error(e);
         }
     }
-    public Mono<StockDetailDTO> getStockDetailByCode(String code) {
-        HttpHeaders headers = createStockDetailHeaders();
+
+    // 현재가 응답 파싱
+    private Mono<RealTimeStockData> parseCurrentPrice(String response) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(response);
+            JsonNode outputNode = rootNode.get("output");
+
+            if (outputNode != null) {
+                String currentPrice = outputNode.get("stck_prpr").asText();
+                String changeRate = outputNode.get("prdy_ctrt").asText();
+                String changeAmount = outputNode.get("prdy_vrss").asText();
+                String volume = outputNode.get("acml_vol").asText();
+                String tradingValue = outputNode.get("acml_tr_pbmn").asText();
+
+                RealTimeStockData data = new RealTimeStockData(
+                        currentPrice, changeRate, changeAmount, volume, tradingValue
+                );
+
+                return Mono.just(data);
+            } else {
+                return Mono.error(new RuntimeException("No current price data found"));
+            }
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
+    }
+
+    // 개별 종목 실시간 현재가 조회
+    public Mono<RealTimeStockData> getRealTimeStockData(String stockCode) {
+        HttpHeaders headers = createCurrentPriceHeaders();
 
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice")
+                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/quotations/inquire-price")
                         .queryParam("FID_COND_MRKT_DIV_CODE", "J")
-                        .queryParam("FID_INPUT_ISCD", code)
-                        .queryParam("FID_INPUT_DATE_1", "20250101")
-                        .queryParam("FID_INPUT_DATE_2", "20250609")
-                        .queryParam("FID_PERIOD_DIV_CODE", "D")
-                        .queryParam("FID_ORG_ADJ_PRC", "0")
+                        .queryParam("FID_INPUT_ISCD", stockCode)
                         .build())
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .retrieve()
                 .bodyToMono(String.class)
-                .flatMap(response -> parseStockPriceInfo(response));
+                .flatMap(this::parseCurrentPrice)
+                .onErrorResume(error -> {
+                    System.err.println("❌ 실시간 데이터 조회 실패 - 종목코드: " + stockCode + ", 오류: " + error.getMessage());
+                    return Mono.empty();
+                });
     }
 
+    // 거래량/거래대금 랭킹 범용 메서드
+    public Mono<List<VolumeRankOutputDTO>> getRankData(String blngClsCode) {
+        HttpHeaders headers = createVolumeRankHttpHeaders();
 
-    // 편의 메서드들 추가
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/quotations/volume-rank")
+                        .queryParam("FID_COND_MRKT_DIV_CODE", "J")
+                        .queryParam("FID_COND_SCR_DIV_CODE", "20171")
+                        .queryParam("FID_INPUT_ISCD", "0000")
+                        .queryParam("FID_DIV_CLS_CODE", "0")
+                        .queryParam("FID_BLNG_CLS_CODE", blngClsCode)
+                        .queryParam("FID_TRGT_CLS_CODE", "111111111")
+                        .queryParam("FID_TRGT_EXLS_CLS_CODE", "000000")
+                        .queryParam("FID_INPUT_PRICE_1", "0")
+                        .queryParam("FID_INPUT_PRICE_2", "0")
+                        .queryParam("FID_VOL_CNT", "0")
+                        .queryParam("FID_INPUT_DATE_1", "0")
+                        .build())
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(this::parseVolumeRank);
+    }
+
+    // 급등락 랭킹 범용 메서드
+    public Mono<List<VolumeRankOutputDTO>> getFluctuationRankData(String rankSortCode) {
+        HttpHeaders headers = createFluctuationRankHttpHeaders();
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/ranking/fluctuation")
+                        .queryParam("fid_rsfl_rate2", "")
+                        .queryParam("fid_cond_mrkt_div_code", "J")
+                        .queryParam("fid_cond_scr_div_code", "20170")
+                        .queryParam("fid_input_iscd", "0000")
+                        .queryParam("fid_rank_sort_cls_code", rankSortCode)
+                        .queryParam("fid_input_cnt_1", "0")
+                        .queryParam("fid_prc_cls_code", "1")
+                        .queryParam("fid_input_price_1", "")
+                        .queryParam("fid_input_price_2", "")
+                        .queryParam("fid_vol_cnt", "")
+                        .queryParam("fid_trgt_cls_code", "0")
+                        .queryParam("fid_trgt_exls_cls_code", "0")
+                        .queryParam("fid_div_cls_code", "0")
+                        .queryParam("fid_rsfl_rate1", "")
+                        .build())
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(this::parseFluctuationRank);
+    }
+
+    // 편의 메서드들
     public Mono<List<VolumeRankOutputDTO>> getVolumeRank() {
         return getRankData("0"); // 거래량
     }
@@ -252,88 +320,23 @@ public class KisService {
     public Mono<List<VolumeRankOutputDTO>> getFallRank() {
         return getFluctuationRankData("1"); // 급하락
     }
-    // 기존 KisService.java에 다음 메서드들을 추가하세요
 
-    // 실시간 현재가 조회용 헤더 생성
-    private HttpHeaders createCurrentPriceHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(accessToken);
-        headers.set("appkey", appkey);
-        headers.set("appSecret", appSecret);
-        headers.set("tr_id", "FHKST01010100");   // 주식 현재가 시세 조회용 TR_ID
-        headers.set("custtype", "P");
-        return headers;
-    }
-
-    // 현재가 응답 파싱용 DTO 클래스 (기존 StockDTO에 맞춤)
-    public static class RealTimeStockData {
-        private String currentPrice;    // 현재가
-        private String changeRate;      // 등락률
-        private String changeAmount;    // 등락금액
-        private String volume;          // 거래량
-        private String tradingValue;    // 거래대금
-
-        // 생성자
-        public RealTimeStockData(String currentPrice, String changeRate, String changeAmount,
-                                 String volume, String tradingValue) {
-            this.currentPrice = currentPrice;
-            this.changeRate = changeRate;
-            this.changeAmount = changeAmount;
-            this.volume = volume;
-            this.tradingValue = tradingValue;
-        }
-
-        // Getter들
-        public String getCurrentPrice() { return currentPrice; }
-        public String getChangeRate() { return changeRate; }
-        public String getChangeAmount() { return changeAmount; }
-        public String getVolume() { return volume; }
-        public String getTradingValue() { return tradingValue; }
-    }
-
-    // 현재가 응답 파싱 메서드
-    private Mono<RealTimeStockData> parseCurrentPrice(String response) {
-        try {
-            JsonNode rootNode = objectMapper.readTree(response);
-            JsonNode outputNode = rootNode.get("output");
-
-            if (outputNode != null) {
-                String currentPrice = outputNode.get("stck_prpr").asText();           // 현재가
-                String changeRate = outputNode.get("prdy_ctrt").asText();             // 등락률
-                String changeAmount = outputNode.get("prdy_vrss").asText();           // 등락금액
-                String volume = outputNode.get("acml_vol").asText();                  // 거래량
-                String tradingValue = outputNode.get("acml_tr_pbmn").asText();        // 거래대금
-
-                RealTimeStockData data = new RealTimeStockData(
-                        currentPrice, changeRate, changeAmount, volume, tradingValue
-                );
-
-                return Mono.just(data);
-            } else {
-                return Mono.error(new RuntimeException("No current price data found"));
-            }
-        } catch (Exception e) {
-            return Mono.error(e);
-        }
-    }
-
-    // 개별 종목 실시간 현재가 조회 메서드
-    public Mono<RealTimeStockData> getRealTimeStockData(String stockCode) {
-        HttpHeaders headers = createCurrentPriceHeaders();
+    // 주식 상세 정보 조회 (일봉 차트)
+    public Mono<StockDetailDTO> getStockDetailByCode(String code) {
+        HttpHeaders headers = createStockDetailHeaders();
 
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/quotations/inquire-price")
+                .uri(uriBuilder -> uriBuilder.path("/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice")
                         .queryParam("FID_COND_MRKT_DIV_CODE", "J")
-                        .queryParam("FID_INPUT_ISCD", stockCode)
+                        .queryParam("FID_INPUT_ISCD", code)
+                        .queryParam("FID_INPUT_DATE_1", "20250101")
+                        .queryParam("FID_INPUT_DATE_2", "20250609")
+                        .queryParam("FID_PERIOD_DIV_CODE", "D")
+                        .queryParam("FID_ORG_ADJ_PRC", "0")
                         .build())
                 .headers(httpHeaders -> httpHeaders.addAll(headers))
                 .retrieve()
                 .bodyToMono(String.class)
-                .flatMap(response -> parseCurrentPrice(response))
-                .onErrorResume(error -> {
-                    System.err.println("❌ 실시간 데이터 조회 실패 - 종목코드: " + stockCode + ", 오류: " + error.getMessage());
-                    return Mono.empty(); // 에러 시 empty 반환
-                });
+                .flatMap(this::parseStockPriceInfo);
     }
 }
