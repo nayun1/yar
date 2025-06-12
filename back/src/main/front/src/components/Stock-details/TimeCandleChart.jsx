@@ -106,9 +106,15 @@ const TimeCandleChart = ({ stockCode }) => {
             enabled: true,
             custom: function({ seriesIndex, dataPointIndex, w }) {
                 const data = sortedData[dataPointIndex];
+                const date = data.stckBsopDate;
+                const time = data.stckCntgHour;
+                const formattedDate = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+                const formattedTime = `${time.slice(0,2)}:${time.slice(2,4)}`;
                 return `
                     <div style="background: white; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
-                        <div style="font-weight: bold; margin-bottom: 5px;">${data.stckCntgHour.slice(0, 2)}:${data.stckCntgHour.slice(2, 4)}</div>
+                        <div style="font-weight: bold; margin-bottom: 5px; font-size:16px; color:#222;">
+                            ${formattedDate} ${formattedTime}
+                        </div>
                         <div style="color: #FF6384;">시가: ${data.stckOprc.toLocaleString()}</div>
                         <div style="color: #FF6384;">고가: ${data.stckHgpr.toLocaleString()}</div>
                         <div style="color: #36A2EB;">저가: ${data.stckLwpr.toLocaleString()}</div>
