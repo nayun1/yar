@@ -223,87 +223,61 @@
 /* 총 자산 섹션 */
 .total-assets-section {
     margin-bottom: 40px;
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    padding: 24px;
 }
 
-.asset-item-detail {
-    background-color: transparent;
-    padding: 0;
-}
-
-.asset-amount {
-    font-size: 18px;
+.total-assets-amount {
+    font-size: 36px;
     font-weight: 700;
     color: white;
     margin-bottom: 8px;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
 }
 
-.negative {
+.total-assets-change {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.positive {
     color: #4a9eff;
 }
 
-/* 주문 가능 금액 섹션 */
-.order-available-section {
-    margin-bottom: 40px;
+.negative {
+    color: #ff6b6b;
 }
 
-.assets-section-title {
+/* 공통 섹션 타이틀 */
+.assets-section-title, .card-section-title {
     font-size: 16px;
     font-weight: 600;
     color: white;
     margin-bottom: 20px;
 }
 
-.order-amounts {
-    display: flex;
-    gap: 12px;
+/* 포트폴리오 그리드 */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
 }
 
-.order-item {
+.portfolio-card {
     background-color: #2a2a2a;
     border-radius: 12px;
-    padding: 20px;
-    flex: 1;
+    padding: 24px;
 }
 
-.order-item-content {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.order-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #3a3a3a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.currency-icon {
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
-}
-
-.currency-icon.dollar {
-    color: #4a9eff;
-}
-
-.order-details {
-    flex: 1;
-}
-
-.order-label {
+.card-label {
     color: #888;
     font-size: 14px;
     margin-bottom: 8px;
 }
 
-.order-amount {
+.card-amount {
     color: white;
     font-size: 24px;
     font-weight: 700;
@@ -311,83 +285,7 @@
     letter-spacing: -0.5px;
 }
 
-/* 투자중인 금액 섹션 */
-.investment-section {
-    margin-bottom: 40px;
-}
-
-.investment-total {
-    font-size: 24px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 24px;
-    letter-spacing: -0.5px;
-}
-
-.total-change {
-    font-size: 16px;
+.card-change {
+    font-size: 14px;
     font-weight: 500;
-}
-
-.total-change.negative {
-    color: #4a9eff;
-}
-
-.investment-breakdown {
-    display: flex;
-    gap: 12px;
-}
-
-.investment-item {
-    background-color: #2a2a2a;
-    border-radius: 12px;
-    padding: 20px;
-    flex: 1;
-}
-
-.investment-item-content {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.investment-flag {
-    font-size: 24px;
-    width: 32px;
-    text-align: center;
-    flex-shrink: 0;
-}
-
-.investment-info {
-    flex: 1;
-}
-
-.investment-label {
-    color: #888;
-    font-size: 14px;
-    margin-bottom: 8px;
-}
-
-.investment-value {
-    color: white;
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    letter-spacing: -0.5px;
-}
-
-.dollar-value {
-    color: #888;
-    font-size: 14px;
-    font-weight: 400;
-    margin-left: 8px;
-}
-
-.investment-change {
-    font-size: 12px;
-    color: #888;
-}
-
-.investment-change.negative {
-    color: #4a9eff;
 }
