@@ -75,12 +75,16 @@ const TimeCandleChart = ({ stockCode }) => {
         },
         xaxis: {
             type: 'category',
-            categories: timeLabels,
             labels: {
                 rotate: -45,
                 rotateAlways: true,
                 style: {
                     fontSize: '12px'
+                },
+                formatter: function(value) {
+                    if (!value) return '';
+                    const minutes = value.split(':')[1];
+                    return (minutes === '00' || minutes === '15' || minutes === '30' || minutes === '45') ? value : '';
                 }
             },
             axisBorder: {
