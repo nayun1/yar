@@ -391,9 +391,9 @@ const StockDetailPage = () => {
                         <div className="detail-chart-header">
                             <h3 className="detail-chart-title">차트</h3>
                         </div>
-                        <div className="detail-chart-placeholder">
-                            📈 주식 차트가 여기에 표시됩니다
-                        </div>
+                            <div className="stock-chart">
+                                <TimeCandleChart stockCode={code} />
+                            </div>
                     </div>
 
                     {/* 주문 패널 */}
@@ -635,10 +635,6 @@ const StockDetailPage = () => {
                         )}
                     </div>
                 </div>
-            </div>
-
-            <div className="stock-chart">
-                <TimeCandleChart stockCode={code} />
             </div>
         </div>
     );
