@@ -5,6 +5,7 @@ import useAuth from '../../hooks/useAuth';
 import LoginModal from '../common/LoginModal';
 import KakaoAuth from '../../utils/KakaoAuth';
 import StockSearch from "../Main/StockSearch";
+import TimeCandleChart from './TimeCandleChart';
 import './StockDetailPage.css';
 
 const StockDetailPage = () => {
@@ -634,6 +635,10 @@ const StockDetailPage = () => {
                         )}
                     </div>
                 </div>
+            </div>
+
+            <div className="stock-chart">
+                <TimeCandleChart stockCode={code} />
             </div>
         </div>
     );

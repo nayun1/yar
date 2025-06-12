@@ -59,6 +59,11 @@
     color: white;
 }
 
+.stock-detail-page .nav-item.active {
+    color: #4285f4;
+    font-weight: 600;
+}
+
 .stock-detail-page .header-right {
     display: flex;
     align-items: center;
@@ -256,7 +261,6 @@
 /* 주문 패널 */
 .order-panel {
     width: 280px;
-    height: 550px;
     background: rgb(29,29,34);
     border-radius: 12px;
     padding: 20px;
@@ -264,62 +268,25 @@
 }
 
 .order-header {
-    margin-bottom: 13px;
+    margin-bottom: 20px;
 }
 
 .order-header h3 {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 13px;
+    margin: 0;
+    font-size: 12px;
     font-weight: 600;
     color: white;
     text-align: left;
-    flex-direction: row;
-    white-space: nowrap;
-}
-
-.order-type-tabs {
-    display: flex;
-    background: rgb(48, 48, 56);
-    border-radius: 8px;
-    padding: 2px;
-    width: 180px;
-    margin-left: 25px;
-}
-
-.order-type-tab {
-    flex: 1;
-    padding: 6px 12px;
-    background: rgb(48, 48, 56);
-    border: none;
-    border-radius: 6px;
-    color: #888;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-
-}
-
-.order-type-tab.active.buy {
-    background: rgba(208, 68, 81, 0.6);
-    color: white;
-}
-
-.order-type-tab.active.sell {
-    background: rgba(86, 132, 246, 0.6);
-    color: white;
 }
 
 .order-form-group {
-    margin-bottom: 10px;
+    margin-bottom: 16px;
 }
 
 .order-form-group.quantity-group {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 12px;
 }
 
 .order-form-group.quantity-group label {
@@ -327,43 +294,44 @@
     min-width: 40px;
 }
 
-.order-form-group.price-group {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.order-form-group.price-group label {
-    margin-bottom: 0;
-    min-width: 70px;
-}
 
 .order-form-group label {
     display: block;
+    margin-bottom: 8px;
     font-size: 13px;
     color: #e0e0e0;
     font-weight: 500;
     text-align: left;
 }
 
+.order-select {
+    width: 100%;
+    padding: 10px 12px;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+}
+
+.order-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .price-type-buttons {
     display: flex;
-    background: rgb(48, 48, 56);
-    border-radius: 8px;
-    padding: 2px;
-    margin-bottom: 2px;
-    width: 250px;
+    gap: 8px;
 }
 
 .price-type-btn {
     flex: 1;
-    padding: 6px 12px;
-    background: rgb(48, 48, 56);
-    border: none;
+    padding: 8px 12px;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
     border-radius: 6px;
-    color: #888;
-    font-size: 12px;
-    font-weight: 500;
+    color: #e0e0e0;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -374,23 +342,12 @@
 }
 
 .price-type-btn.active {
-    background: rgb(78, 78, 89);
+    background: #4a4a4a;
     color: white;
+    border-color: #5a5a5a;
 }
 
-.price-input-container {
-    display: flex;
-    align-items: center;
-    background: #1a1a1a;
-    border: 1px solid #3a3a3a;
-    border-radius: 10px;
-    padding: 8px 18px;
-    gap: 0;
-    width: 200px;
-    flex: 1;
-    margin-left: 45px;
-}
-
+.price-input-container,
 .quantity-input-container {
     display: flex;
     align-items: center;
@@ -401,19 +358,9 @@
     gap: 0;
     width: 200px;
     flex: 1;
-    margin-right: 10px;
 }
 
-.price-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 12px;
-    text-align: left;
-    outline: none;
-}
-
+.price-input,
 .quantity-input {
     flex: 1;
     background: transparent;
@@ -424,37 +371,20 @@
     outline: none;
 }
 
-.price-input:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
+.price-input:disabled,
 .quantity-input:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.price-controls {
+.price-controls,
+.quantity-controls {
     display: flex;
     gap: 9px;
     margin-left: auto;
 }
 
-.quantity-controls {
-    display: flex;
-    gap: 9px;
-}
-
-.price-control-btn {
-    width: 15px;
-    height: 15px;
-    background: transparent;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    display: flex;
-}
-
+.price-control-btn,
 .quantity-control-btn {
     width: 15px;
     height: 15px;
@@ -465,20 +395,13 @@
     display: flex;
 }
 
-.price-control-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
+.price-control-btn:disabled,
 .quantity-control-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.price-control-btn:hover:not(:disabled) {
-    color: white;
-}
-
+.price-control-btn:hover:not(:disabled),
 .quantity-control-btn:hover:not(:disabled) {
     color: white;
 }
@@ -509,28 +432,18 @@
 }
 
 .order-btn {
-    width: 235px;
-    height: 34px;
+    width: 100%;
     padding: 12px;
     background: rgb(208, 68, 81);
     border: none;
     border-radius: 6px;
     color: white;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.2s;
     margin-bottom: 125px;
     text-align: left;
-    line-height: 11px;
-}
-
-.order-btn.sell {
-    background: rgba(86, 132, 246, 0.8);
-}
-
-.order-btn.sell:hover {
-    background: rgba(106, 142, 256, 0.8);
 }
 
 .order-btn:hover {
@@ -585,63 +498,4 @@
 
 .detail-error-button:hover {
     background: #3367d6;
-}
-
-/* 수량 입력 토스트 알림 스타일 - 구매 버튼 밑에 위치 */
-.quantity-toast {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    animation: toastSlideUp 0.3s ease-out;
-    width: 235px;
-}
-
-.quantity-toast-icon {
-    font-size: 16px;
-    flex-shrink: 0;
-}
-
-.quantity-toast-message {
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
-    flex: 1;
-}
-
-.quantity-toast-close {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s;
-    flex-shrink: 0;
-}
-
-.quantity-toast-close:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-@keyframes toastSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
