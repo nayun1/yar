@@ -5,8 +5,13 @@ import useAuth from '../../hooks/useAuth';
 import LoginModal from '../common/LoginModal';
 import KakaoAuth from '../../utils/KakaoAuth';
 import StockSearch from "../Main/StockSearch";
-import TimeCandleChart from './TimeCandleChart';
+import TimeCandleChart from "./TimeCandleChart";
+import DayCandleChart from "./DayCandleChart";
+import WeekCandleChart from "./WeekCandleChart";
+import MonthCandleChart from "./MonthCandleChart";
+import YearCandleChart from "./YearCandleChart";
 import './StockDetailPage.css';
+
 
 const StockDetailPage = () => {
     const { code } = useParams();
@@ -16,6 +21,7 @@ const StockDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [showQuantityAlert, setShowQuantityAlert] = useState(false);
+    const [selectedType, setSelectedType] = useState("time"); // 기본값은 "time"
 
     // 주문 관련 상태
     const [orderType, setOrderType] = useState('buy'); // 'buy', 'sell'
@@ -73,6 +79,23 @@ const StockDetailPage = () => {
 
         return () => clearInterval(interval);
     }, [stockData?.code]);
+
+     const renderChart = () => {
+         switch (selectedType) {
+             case "time":
+                 return <TimeCandleChart stockCode={code} />;
+             case "daily":
+                return <DayCandleChart stockCode={code} />;
+             case "weekly":
+                 return <WeekCandleChart stockCode={code} />;
+            case "monthly":
+                return <MonthCandleChart stockCode={code} />;
+            case "yearly":
+                return <YearCandleChart stockCode={code} />;
+            default:
+                return null;
+         }
+     };
 
     const fetchStockDetail = async (stockCode) => {
         try {
@@ -390,10 +413,17 @@ const StockDetailPage = () => {
                     <div className="detail-chart-section">
                         <div className="detail-chart-header">
                             <h3 className="detail-chart-title">차트</h3>
-                        </div>
-                            <div className="stock-chart">
-                                <TimeCandleChart stockCode={code} />
+                            <div className="chart-buttons">
+                                <button onClick={() => setSelectedType("time")}>시간별</button>
+                                <button onClick={() => setSelectedType("daily")}>일별</button>
+                                <button onClick={() => setSelectedType("weekly")}>주별</button>
+                                <button onClick={() => setSelectedType("monthly")}>월별</button>
+                                <button onClick={() => setSelectedType("yearly")}>년별</button>
                             </div>
+                        </div>
+                        <div className="stock-chart">
+                            {renderChart()}
+                        </div>
                     </div>
 
                     {/* 주문 패널 */}
