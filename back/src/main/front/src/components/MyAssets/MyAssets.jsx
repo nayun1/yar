@@ -9,7 +9,7 @@ import './MyAssets.css';
 const MyAssets = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const [activeTab, setActiveTab] = useState('assets'); // 'assets' 또는 'transactions'
+    const [activeTab, setActiveTab] = useState('assets'); // 'assets', 'holdings'
 
     // 인증 상태 관리
     const { isLoggedIn, userInfo, loading, logout } = useAuth();
@@ -69,6 +69,181 @@ const MyAssets = () => {
 
     const handleKakaoLogin = () => {
         KakaoAuth.login();
+    };
+
+    // 탭별 콘텐츠 렌더링
+    const renderTabContent = () => {
+        switch(activeTab) {
+            case 'assets':
+                return (
+                    <>
+                        {/* 총 자산 섹션 */}
+                        <div className="total-assets-section">
+                            <h3 className="assets-section-title">총 자산</h3>
+                            <div className="total-assets-amount">52,450,000원</div>
+                            <div className="total-assets-change positive">+2,450,000원 (+4.9%)</div>
+                        </div>
+
+                        {/* 포트폴리오 카드 그리드 */}
+                        <div className="portfolio-grid">
+                            {/* 주문 가능 금액 카드 */}
+                            <div className="portfolio-card">
+                                <h3 className="card-section-title">주문 가능 금액</h3>
+                                <div className="card-content">
+                                    <div className="card-details">
+                                        <div className="card-label">원화</div>
+                                        <div className="card-amount">2,450,000원</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 투자중인 금액 카드 */}
+                            <div className="portfolio-card">
+                                <h3 className="card-section-title">투자중인 금액</h3>
+                                <div className="card-content">
+                                    <div className="card-details">
+                                        <div className="card-label">주식</div>
+                                        <div className="card-amount">50,000,000원</div>
+                                        <div className="card-change positive">+5,000,000원 (+11.1%)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                );
+
+            case 'holdings':
+                return (
+                    <div className="holdings-section">
+                        <h3 className="assets-section-title">보유종목</h3>
+                        <div className="holdings-list">
+                            {/* 보유종목 아이템들 */}
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">SK하이닉스</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">125,000원</div>
+                                    <div className="holdings-change negative">-2,500원 (-2.0%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">삼성전자</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">71,200원</div>
+                                    <div className="holdings-change positive">+800원 (+1.1%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">카카오</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">48,650원</div>
+                                    <div className="holdings-change negative">-1,200원 (-2.4%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">네이버</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">189,500원</div>
+                                    <div className="holdings-change positive">+3,500원 (+1.9%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">LG화학</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">392,000원</div>
+                                    <div className="holdings-change negative">-8,000원 (-2.0%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">셀트리온</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">178,500원</div>
+                                    <div className="holdings-change positive">+2,500원 (+1.4%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">현대차</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">168,000원</div>
+                                    <div className="holdings-change negative">-3,000원 (-1.8%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">POSCO홀딩스</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">298,500원</div>
+                                    <div className="holdings-change positive">+4,500원 (+1.5%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">KB금융</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">52,800원</div>
+                                    <div className="holdings-change neutral">0원 (0.0%)</div>
+                                </div>
+                            </div>
+
+                            <div className="holdings-item">
+                                <div className="holdings-item-left">
+                                    <div className="holdings-info">
+                                        <div className="holdings-name">크래프톤</div>
+                                    </div>
+                                </div>
+                                <div className="holdings-item-right">
+                                    <div className="holdings-price">234,000원</div>
+                                    <div className="holdings-change negative">-6,000원 (-2.5%)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            default:
+                return null;
+        }
     };
 
     // 로그인이 필요한 경우
@@ -185,48 +360,17 @@ const MyAssets = () => {
                             자산
                         </button>
                         <button
-                            className={`sidebar-menu-item ${activeTab === 'transactions' ? 'active' : ''}`}
-                            onClick={() => setActiveTab('transactions')}
+                            className={`sidebar-menu-item ${activeTab === 'holdings' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('holdings')}
                         >
-                            거래내역
+                            보유종목
                         </button>
                     </div>
                 </div>
 
                 {/* 메인 콘텐츠 영역 */}
                 <div className="assets-main">
-                    {/* 총 자산 섹션 */}
-                    <div className="total-assets-section">
-                        <h3 className="assets-section-title">총 자산</h3>
-                        <div className="total-assets-amount">52,450,000원</div>
-                        <div className="total-assets-change positive">+2,450,000원 (+4.9%)</div>
-                    </div>
-
-                    {/* 포트폴리오 카드 그리드 */}
-                    <div className="portfolio-grid">
-                        {/* 주문 가능 금액 카드 */}
-                        <div className="portfolio-card">
-                            <h3 className="card-section-title">주문 가능 금액</h3>
-                            <div className="card-content">
-                                <div className="card-details">
-                                    <div className="card-label">원화</div>
-                                    <div className="card-amount">2,450,000원</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* 투자중인 금액 카드 */}
-                        <div className="portfolio-card">
-                            <h3 className="card-section-title">투자중인 금액</h3>
-                            <div className="card-content">
-                                <div className="card-details">
-                                    <div className="card-label">주식</div>
-                                    <div className="card-amount">50,000,000원</div>
-                                    <div className="card-change positive">+5,000,000원 (+11.1%)</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {renderTabContent()}
                 </div>
             </div>
         </div>

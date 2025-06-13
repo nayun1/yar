@@ -200,6 +200,7 @@
 .sidebar-menu-item:hover {
     background-color: #1f1f1f;
     color: #fff;
+    border-radius: 8px;
 }
 
 /* 활성화된 메뉴 */
@@ -214,9 +215,9 @@
 /* 메인 콘텐츠 */
 .assets-main {
     flex: 1;
-    padding: 20px 24px;
+    padding: 50px 30px;
     background-color: #1a1a1a;
-    margin-left: 220px;
+    margin-left: 300px;
     max-width: 800px;
 }
 
@@ -288,4 +289,80 @@
 .card-change {
     font-size: 14px;
     font-weight: 500;
+}
+
+.holdings-section {
+    width: 100%;
+}
+
+.holdings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.holdings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 20px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+
+.holdings-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+}
+
+.holdings-item-left {
+    display: flex;
+    align-items: center;
+}
+
+.holdings-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.holdings-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.holdings-item-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.holdings-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.holdings-change {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.holdings-change.positive {
+    color: #ff4444;
+}
+
+.holdings-change.negative {
+    color: #4285f4;
+}
+
+.holdings-change.neutral {
+    color: #888;
 }
