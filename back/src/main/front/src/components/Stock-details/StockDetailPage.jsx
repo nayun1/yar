@@ -262,11 +262,11 @@ const StockDetailPage = () => {
     };
 
     const getOrderButtonClass = () => {
-        let baseClass = 'order-btn';
+        let baseClass = 'detail-order-btn';
         if (!isLoggedIn) {
-            baseClass += ' login-required';
+            baseClass += ' detail-login-required';
         } else if (orderType === 'sell') {
-            baseClass += ' sell';
+            baseClass += ' detail-sell';
         }
         return baseClass;
     };
@@ -309,44 +309,44 @@ const StockDetailPage = () => {
     return (
         <div className="stock-detail-page">
             {/* 헤더 */}
-            <div className="header">
-                <div className="header-content">
-                    <div className="header-left">
-                        <div className="logo">
-                            <a href="/" className="logo-link">
-                                <img src="/images/logo.png" alt="Young & Rich" className="main-logo-image"/>
+            <div className="detail-header">
+                <div className="detail-header-content">
+                    <div className="detail-header-left">
+                        <div className="detail-logo">
+                            <a href="/" className="detail-logo-link">
+                                <img src="/images/logo.png" alt="Young & Rich" className="detail-main-logo-image"/>
                             </a>
                         </div>
-                        <nav className="main-nav">
-                            <a href="/" className="nav-item">홈</a>
-                            <a href="/my-assets" className="nav-item">내 자산</a>
+                        <nav className="detail-main-nav">
+                            <a href="/" className="detail-nav-item">홈</a>
+                            <a href="/my-assets" className="detail-nav-item">내 자산</a>
                         </nav>
                     </div>
-                    <div className="header-right">
+                    <div className="detail-header-right">
                         <StockSearch/>
 
                         {authLoading ? (
-                            <div className="login-loading">로딩...</div>
+                            <div className="detail-login-loading">로딩...</div>
                         ) : isLoggedIn ? (
-                            <div className="user-info-container">
-                                <div className="user-profile">
+                            <div className="detail-user-info-container">
+                                <div className="detail-user-profile">
                                     {getUserProfileImage() ? (
                                         <img
                                             src={getUserProfileImage()}
                                             alt="프로필"
-                                            className="profile-image"
+                                            className="detail-profile-image"
                                         />
                                     ) : (
-                                        <User className="profile-icon" />
+                                        <User className="detail-profile-icon" />
                                     )}
-                                    <span className="user-name">{getUserDisplayName()}</span>
+                                    <span className="detail-user-name">{getUserDisplayName()}</span>
                                 </div>
-                                <button className="logout-btn" onClick={logout}>
+                                <button className="detail-logout-btn" onClick={logout}>
                                     로그아웃
                                 </button>
                             </div>
                         ) : (
-                            <button className="login-btn" onClick={handleLoginClick}>
+                            <button className="detail-login-btn" onClick={handleLoginClick}>
                                 로그인
                             </button>
                         )}
@@ -391,25 +391,25 @@ const StockDetailPage = () => {
                         <div className="detail-chart-header">
                             <h3 className="detail-chart-title">차트</h3>
                         </div>
-                            <div className="stock-chart">
-                                <TimeCandleChart stockCode={code} />
-                            </div>
+                        <div className="detail-stock-chart">
+                            <TimeCandleChart stockCode={code} />
+                        </div>
                     </div>
 
                     {/* 주문 패널 */}
-                    <div className="order-panel">
-                        <div className="order-header">
+                    <div className="detail-order-panel">
+                        <div className="detail-order-header">
                             <h3>
                                 주문하기
-                                <div className="order-type-tabs">
+                                <div className="detail-order-type-tabs">
                                     <button
-                                        className={`order-type-tab ${orderType === 'buy' ? 'active buy' : ''}`}
+                                        className={`detail-order-type-tab ${orderType === 'buy' ? 'active buy' : ''}`}
                                         onClick={() => setOrderType('buy')}
                                     >
                                         구매
                                     </button>
                                     <button
-                                        className={`order-type-tab ${orderType === 'sell' ? 'active sell' : ''}`}
+                                        className={`detail-order-type-tab ${orderType === 'sell' ? 'active sell' : ''}`}
                                         onClick={() => setOrderType('sell')}
                                     >
                                         판매
@@ -419,18 +419,18 @@ const StockDetailPage = () => {
                         </div>
 
                         {!isLoggedIn ? (
-                            <div className="order-login-required">
-                                <div className="order-form-group price-group">
+                            <div className="detail-order-login-required">
+                                <div className="detail-order-form-group detail-price-group">
                                     <label>구매 가격</label>
-                                    <div className="price-type-buttons">
+                                    <div className="detail-price-type-buttons">
                                         <button
-                                            className={`price-type-btn ${priceType === '지정가' ? 'active' : ''}`}
+                                            className={`detail-price-type-btn ${priceType === '지정가' ? 'active' : ''}`}
                                             onClick={() => setPriceType('지정가')}
                                         >
                                             지정가
                                         </button>
                                         <button
-                                            className={`price-type-btn ${priceType === '시장가' ? 'active' : ''}`}
+                                            className={`detail-price-type-btn ${priceType === '시장가' ? 'active' : ''}`}
                                             onClick={() => setPriceType('시장가')}
                                         >
                                             시장가
@@ -438,52 +438,52 @@ const StockDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="order-form-group price-group">
-                                    <div className="price-input-container">
+                                <div className="detail-order-form-group detail-price-group">
+                                    <div className="detail-price-input-container">
                                         <input
                                             type="text"
-                                            className="price-input"
+                                            className="detail-price-input"
                                             value={`${stockData.price.toLocaleString()} 원`}
                                             disabled
                                         />
-                                        <div className="price-controls">
-                                            <button className="price-control-btn" disabled>
+                                        <div className="detail-price-controls">
+                                            <button className="detail-price-control-btn" disabled>
                                                 <Minus size={16} />
                                             </button>
-                                            <button className="price-control-btn" disabled>
+                                            <button className="detail-price-control-btn" disabled>
                                                 <Plus size={16} />
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="order-form-group quantity-group">
+                                <div className="detail-order-form-group detail-quantity-group">
                                     <label>수량</label>
-                                    <div className="quantity-input-container">
+                                    <div className="detail-quantity-input-container">
                                         <input
                                             type="text"
-                                            className="quantity-input"
+                                            className="detail-quantity-input"
                                             value=""
                                             placeholder="수량 입력"
                                             disabled
                                         />
-                                        <div className="quantity-controls">
-                                            <button className="quantity-control-btn" disabled>
+                                        <div className="detail-quantity-controls">
+                                            <button className="detail-quantity-control-btn" disabled>
                                                 <Minus size={16} />
                                             </button>
-                                            <button className="quantity-control-btn" disabled>
+                                            <button className="detail-quantity-control-btn" disabled>
                                                 <Plus size={16} />
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="order-summary">
-                                    <div className="summary-row">
+                                <div className="detail-order-summary">
+                                    <div className="detail-summary-row">
                                         <span>구매가능 금액</span>
                                         <span>0원</span>
                                     </div>
-                                    <div className="summary-row total">
+                                    <div className="detail-summary-row detail-total">
                                         <span>총 주문 금액</span>
                                         <span>{stockData.price.toLocaleString()}원</span>
                                     </div>
@@ -494,18 +494,18 @@ const StockDetailPage = () => {
                                 </button>
                             </div>
                         ) : (
-                            <div className="order-form">
-                                <div className="order-form-group price-group">
+                            <div className="detail-order-form">
+                                <div className="detail-order-form-group detail-price-group">
                                     <label>구매 가격</label>
-                                    <div className="price-type-buttons">
+                                    <div className="detail-price-type-buttons">
                                         <button
-                                            className={`price-type-btn ${priceType === '지정가' ? 'active' : ''}`}
+                                            className={`detail-price-type-btn ${priceType === '지정가' ? 'active' : ''}`}
                                             onClick={() => setPriceType('지정가')}
                                         >
                                             지정가
                                         </button>
                                         <button
-                                            className={`price-type-btn ${priceType === '시장가' ? 'active' : ''}`}
+                                            className={`detail-price-type-btn ${priceType === '시장가' ? 'active' : ''}`}
                                             onClick={() => setPriceType('시장가')}
                                         >
                                             시장가
@@ -513,11 +513,11 @@ const StockDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="order-form-group price-group">
-                                    <div className="price-input-container">
+                                <div className="detail-order-form-group detail-price-group">
+                                    <div className="detail-price-input-container">
                                         <input
                                             type="text"
-                                            className="price-input"
+                                            className="detail-price-input"
                                             value={priceType === '시장가' ? `${stockData.price.toLocaleString()} 원` : `${orderPrice} 원`}
                                             onChange={handlePriceChange}
                                             disabled={priceType === '시장가'}
@@ -542,16 +542,16 @@ const StockDetailPage = () => {
                                                 }
                                             }}
                                         />
-                                        <div className="price-controls">
+                                        <div className="detail-price-controls">
                                             <button
-                                                className="price-control-btn"
+                                                className="detail-price-control-btn"
                                                 onClick={() => adjustPrice(-1)}
                                                 disabled={priceType === '시장가'}
                                             >
                                                 <Minus size={16}/>
                                             </button>
                                             <button
-                                                className="price-control-btn"
+                                                className="detail-price-control-btn"
                                                 onClick={() => adjustPrice(1)}
                                                 disabled={priceType === '시장가'}
                                             >
@@ -561,12 +561,12 @@ const StockDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="order-form-group quantity-group">
+                                <div className="detail-order-form-group detail-quantity-group">
                                     <label>수량</label>
-                                    <div className="quantity-input-container">
+                                    <div className="detail-quantity-input-container">
                                         <input
                                             type="text"
-                                            className="quantity-input"
+                                            className="detail-quantity-input"
                                             value={orderQuantity ? `${orderQuantity} 주` : ''}
                                             onChange={handleQuantityChange}
                                             placeholder="수량 입력"
@@ -586,15 +586,15 @@ const StockDetailPage = () => {
                                                 }
                                             }}
                                         />
-                                        <div className="quantity-controls">
+                                        <div className="detail-quantity-controls">
                                             <button
-                                                className="quantity-control-btn"
+                                                className="detail-quantity-control-btn"
                                                 onClick={() => adjustQuantity(-1)}
                                             >
                                                 <Minus size={16}/>
                                             </button>
                                             <button
-                                                className="quantity-control-btn"
+                                                className="detail-quantity-control-btn"
                                                 onClick={() => adjustQuantity(1)}
                                             >
                                                 <Plus size={16}/>
@@ -603,12 +603,12 @@ const StockDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className="order-summary">
-                                    <div className="summary-row">
+                                <div className="detail-order-summary">
+                                    <div className="detail-summary-row">
                                         <span>구매가능 금액</span>
                                         <span>1,000,000원</span>
                                     </div>
-                                    <div className="summary-row total">
+                                    <div className="detail-summary-row detail-total">
                                         <span>총 주문 금액</span>
                                         <span>{calculateTotalPrice().toLocaleString()}원</span>
                                     </div>
@@ -620,11 +620,11 @@ const StockDetailPage = () => {
 
                                 {/* 수량 입력 알림 토스트 */}
                                 {showQuantityAlert && (
-                                    <div className="quantity-toast">
-                                        <span className="quantity-toast-icon">💡</span>
-                                        <span className="quantity-toast-message">수량을 입력하세요.</span>
+                                    <div className="detail-quantity-toast">
+                                        <span className="detail-quantity-toast-icon">💡</span>
+                                        <span className="detail-quantity-toast-message">수량을 입력하세요.</span>
                                         <button
-                                            className="quantity-toast-close"
+                                            className="detail-quantity-toast-close"
                                             onClick={() => setShowQuantityAlert(false)}
                                         >
                                             ×

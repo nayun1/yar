@@ -7,12 +7,12 @@
     font-size: 14px;
 }
 
-/* 메인과 동일한 헤더 스타일 */
-.stock-detail-page .header {
+/* 디테일 페이지 전용 헤더 스타일 */
+.stock-detail-page .detail-header {
     padding: 2px 24px;
 }
 
-.stock-detail-page .header-content {
+.stock-detail-page .detail-header-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -20,34 +20,34 @@
     margin: 0 auto;
 }
 
-.stock-detail-page .header-left {
+.stock-detail-page .detail-header-left {
     display: flex;
     align-items: center;
     gap: 32px;
 }
 
-.stock-detail-page .logo {
+.stock-detail-page .detail-logo {
     display: flex;
     align-items: center;
 }
 
-.stock-detail-page .logo-link {
+.stock-detail-page .detail-logo-link {
     text-decoration: none;
     display: flex;
     align-items: center;
 }
 
-.stock-detail-page .main-logo-image {
+.stock-detail-page .detail-main-logo-image {
     height: 100px;
     width: auto;
 }
 
-.stock-detail-page .main-nav {
+.stock-detail-page .detail-main-nav {
     display: flex;
     gap: 24px;
 }
 
-.stock-detail-page .nav-item {
+.stock-detail-page .detail-nav-item {
     color: #e0e0e0;
     cursor: pointer;
     font-size: 14px;
@@ -55,23 +55,23 @@
     text-decoration: none;
 }
 
-.stock-detail-page .nav-item:hover {
+.stock-detail-page .detail-nav-item:hover {
     color: white;
 }
 
-.stock-detail-page .header-right {
+.stock-detail-page .detail-header-right {
     display: flex;
     align-items: center;
     gap: 24px;
 }
 
-.stock-detail-page .user-info-container {
+.stock-detail-page .detail-user-info-container {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.stock-detail-page .user-profile {
+.stock-detail-page .detail-user-profile {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -81,19 +81,19 @@
     color: #e0e0e0;
 }
 
-.stock-detail-page .profile-image {
+.stock-detail-page .detail-profile-image {
     width: 32px;
     height: 32px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-.stock-detail-page .profile-icon {
+.stock-detail-page .detail-profile-icon {
     width: 24px;
     height: 24px;
 }
 
-.stock-detail-page .user-name {
+.stock-detail-page .detail-user-name {
     max-width: 100px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -103,7 +103,7 @@
     padding-left: 2px;
 }
 
-.stock-detail-page .login-btn {
+.stock-detail-page .detail-login-btn {
     background-color: transparent;
     color: #e0e0e0;
     border: none;
@@ -115,16 +115,16 @@
     transition: background-color 0.2s;
 }
 
-.stock-detail-page .login-btn:hover {
+.stock-detail-page .detail-login-btn:hover {
     background-color: #3a3a3a;
 }
 
-.stock-detail-page .login-loading {
+.stock-detail-page .detail-login-loading {
     color: #888;
     font-size: 14px;
 }
 
-.stock-detail-page .logout-btn {
+.stock-detail-page .detail-logout-btn {
     background: none;
     border: none;
     color: #e0e0e0;
@@ -135,7 +135,7 @@
     transition: all 0.2s;
 }
 
-.stock-detail-page .logout-btn:hover {
+.stock-detail-page .detail-logout-btn:hover {
     background-color: #ff4444;
     color: white;
 }
@@ -146,7 +146,7 @@
     padding: 20px 13px;
 }
 
-/* 종목 정보 카드 */
+/* 종목 정보 카드  */
 .detail-stock-info-card {
     background: transparent;
     border-radius: 12px;
@@ -244,7 +244,7 @@
 
 .detail-chart-placeholder {
     height: 550px;
-    background: rgb(29,29,34);
+    background: rgb(35, 35, 39);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -254,20 +254,20 @@
 }
 
 /* 주문 패널 */
-.order-panel {
+.detail-order-panel {
     width: 280px;
     height: 550px;
     background: rgb(29,29,34);
     border-radius: 12px;
     padding: 20px;
-    margin-top: 62px;
+    margin-top: 80px;
 }
 
-.order-header {
+.detail-order-header {
     margin-bottom: 13px;
 }
 
-.order-header h3 {
+.detail-order-header h3 {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -279,7 +279,7 @@
     white-space: nowrap;
 }
 
-.order-type-tabs {
+.detail-order-type-tabs {
     display: flex;
     background: rgb(48, 48, 56);
     border-radius: 8px;
@@ -288,7 +288,7 @@
     margin-left: 25px;
 }
 
-.order-type-tab {
+.detail-order-type-tab {
     flex: 1;
     padding: 6px 12px;
     background: rgb(48, 48, 56);
@@ -302,43 +302,43 @@
 
 }
 
-.order-type-tab.active.buy {
+.detail-order-type-tab.active.buy {
     background: rgba(208, 68, 81, 0.6);
     color: white;
 }
 
-.order-type-tab.active.sell {
+.detail-order-type-tab.active.sell {
     background: rgba(86, 132, 246, 0.6);
     color: white;
 }
 
-.order-form-group {
+.detail-order-form-group {
     margin-bottom: 10px;
 }
 
-.order-form-group.quantity-group {
+.detail-order-form-group.detail-quantity-group {
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.order-form-group.quantity-group label {
+.detail-order-form-group.detail-quantity-group label {
     margin-bottom: 0;
     min-width: 40px;
 }
 
-.order-form-group.price-group {
+.detail-order-form-group.detail-price-group {
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.order-form-group.price-group label {
+.detail-order-form-group.detail-price-group label {
     margin-bottom: 0;
     min-width: 70px;
 }
 
-.order-form-group label {
+.detail-order-form-group label {
     display: block;
     font-size: 13px;
     color: #e0e0e0;
@@ -346,7 +346,7 @@
     text-align: left;
 }
 
-.price-type-buttons {
+.detail-price-type-buttons {
     display: flex;
     background: rgb(48, 48, 56);
     border-radius: 8px;
@@ -355,7 +355,7 @@
     width: 250px;
 }
 
-.price-type-btn {
+.detail-price-type-btn {
     flex: 1;
     padding: 6px 12px;
     background: rgb(48, 48, 56);
@@ -368,17 +368,17 @@
     transition: all 0.2s;
 }
 
-.price-type-btn:disabled {
+.detail-price-type-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.price-type-btn.active {
+.detail-price-type-btn.active {
     background: rgb(78, 78, 89);
     color: white;
 }
 
-.price-input-container {
+.detail-price-input-container {
     display: flex;
     align-items: center;
     background: #1a1a1a;
@@ -391,7 +391,7 @@
     margin-left: 45px;
 }
 
-.quantity-input-container {
+.detail-quantity-input-container {
     display: flex;
     align-items: center;
     background: #1a1a1a;
@@ -404,7 +404,7 @@
     margin-right: 10px;
 }
 
-.price-input {
+.detail-price-input {
     flex: 1;
     background: transparent;
     border: none;
@@ -414,7 +414,7 @@
     outline: none;
 }
 
-.quantity-input {
+.detail-quantity-input {
     flex: 1;
     background: transparent;
     border: none;
@@ -424,28 +424,28 @@
     outline: none;
 }
 
-.price-input:disabled {
+.detail-price-input:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.quantity-input:disabled {
+.detail-quantity-input:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.price-controls {
+.detail-price-controls {
     display: flex;
     gap: 9px;
     margin-left: auto;
 }
 
-.quantity-controls {
+.detail-quantity-controls {
     display: flex;
     gap: 9px;
 }
 
-.price-control-btn {
+.detail-price-control-btn {
     width: 15px;
     height: 15px;
     background: transparent;
@@ -455,7 +455,7 @@
     display: flex;
 }
 
-.quantity-control-btn {
+.detail-quantity-control-btn {
     width: 15px;
     height: 15px;
     background: transparent;
@@ -465,31 +465,31 @@
     display: flex;
 }
 
-.price-control-btn:disabled {
+.detail-price-control-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.quantity-control-btn:disabled {
+.detail-quantity-control-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.price-control-btn:hover:not(:disabled) {
+.detail-price-control-btn:hover:not(:disabled) {
     color: white;
 }
 
-.quantity-control-btn:hover:not(:disabled) {
+.detail-quantity-control-btn:hover:not(:disabled) {
     color: white;
 }
 
-.order-summary {
+.detail-order-summary {
     border-top: 1px solid #3a3a3a;
     padding-top: 16px;
     margin-bottom: 20px;
 }
 
-.summary-row {
+.detail-summary-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -497,18 +497,18 @@
     font-size: 13px;
 }
 
-.summary-row:first-child {
+.detail-summary-row:first-child {
     color: #888;
 }
 
-.summary-row.total {
+.detail-summary-row.detail-total {
     font-weight: 600;
     font-size: 14px;
     color: white;
     padding-top: 13px;
 }
 
-.order-btn {
+.detail-order-btn {
     width: 235px;
     height: 34px;
     padding: 12px;
@@ -525,24 +525,30 @@
     line-height: 11px;
 }
 
-.order-btn.sell {
+.detail-order-btn.detail-sell {
     background: rgba(86, 132, 246, 0.8);
 }
 
-.order-btn.sell:hover {
+.detail-order-btn.detail-sell:hover {
     background: rgba(106, 142, 256, 0.8);
 }
 
-.order-btn:hover {
+.detail-order-btn:hover {
     background: rgb(210, 91, 101);
 }
 
-.order-btn.login-required {
+.detail-order-btn.detail-login-required {
     background: rgb(208, 68, 81);
 }
 
-.order-btn.login-required:hover {
+.detail-order-btn.detail-login-required:hover {
     background: rgb(210, 91, 101);
+}
+
+/* 로그인 필요 상태와 로그인된 상태 공통 스타일 */
+.detail-order-login-required,
+.detail-order-form {
+    /* 공통 스타일이 필요하면 여기에 추가 */
 }
 
 /* 로딩 및 에러 상태 */
@@ -587,8 +593,8 @@
     background: #3367d6;
 }
 
-/* 수량 입력 토스트 알림 스타일 - 구매 버튼 밑에 위치 */
-.quantity-toast {
+/* 수량 입력 토스트 알림 스타일 */
+.detail-quantity-toast {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -601,19 +607,19 @@
     width: 235px;
 }
 
-.quantity-toast-icon {
+.detail-quantity-toast-icon {
     font-size: 16px;
     flex-shrink: 0;
 }
 
-.quantity-toast-message {
+.detail-quantity-toast-message {
     color: white;
     font-size: 14px;
     font-weight: 500;
     flex: 1;
 }
 
-.quantity-toast-close {
+.detail-quantity-toast-close {
     background: none;
     border: none;
     color: rgba(255, 255, 255, 0.7);
@@ -630,7 +636,7 @@
     flex-shrink: 0;
 }
 
-.quantity-toast-close:hover {
+.detail-quantity-toast-close:hover {
     background: rgba(255, 255, 255, 0.1);
     color: white;
 }
@@ -645,34 +651,50 @@
         transform: translateY(0);
     }
 }
-.stock-detail-container {
+
+.detail-stock-container {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.stock-info {
-    margin-bottom: 30px;
+.detail-stock-info-section {
+    margin-bottom: 0;
 }
 
-.stock-price-info {
+.detail-stock-price-info-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     margin-top: 20px;
 }
 
-.stock-price-info p {
+.detail-stock-price-info-grid p {
     padding: 15px;
     background-color: #f5f5f5;
     border-radius: 8px;
     font-size: 1.1em;
 }
 
-.stock-chart {
-    background-color: white;
+.detail-stock-chart {
+    background-color: rgb(35, 35, 39);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-top: 20px;
+}
+
+.detail-chart-buttons {
+    margin-top: 10px;
+}
+.detail-chart-buttons button {
+    margin-right: 8px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.detail-chart-buttons button:hover {
+    background-color: #f0f0f0;
 }
