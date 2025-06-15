@@ -1,3 +1,4 @@
+//WeekCandleChart.jsx
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
@@ -13,7 +14,7 @@ const WeekCandleChart = ({ stockCode }) => {
                 setLoading(true);
                 const today = new Date();
                 const endDate = today.toISOString().slice(0, 10).replace(/-/g, '');
-                const startDate = new Date(today.setMonth(today.getMonth() - 6)) // 최근 6개월치 주봉
+                const startDate = new Date(today.setFullYear(today.getFullYear() - 2)) // 최근 2년치 주봉
                     .toISOString()
                     .slice(0, 10)
                     .replace(/-/g, '');
@@ -60,29 +61,92 @@ const WeekCandleChart = ({ stockCode }) => {
         chart: {
             type: 'candlestick',
             height: 500,
+            animations: {
+                enabled: false,
+                dynamicAnimation: {
+                    enabled: false
+                }
+            },
             toolbar: {
-                show: false,
-            }
+                show: false
+            },
+            background: 'rgb(29, 29, 34)',
+            foreColor: '#ffffff',
+            redrawOnParentResize: false,
+            redrawOnWindowResize: false
         },
         title: {
-            text: '주봉 차트',
-            align: 'left'
+            text: '',
+            align: 'left',
+            style: {
+                color: '#ffffff'
+            }
         },
         xaxis: {
             type: 'category',
             labels: {
                 rotate: -45,
+                rotateAlways: true,
                 style: {
-                    fontSize: '12px'
-                }
+                    fontSize: '12px',
+                    colors: '#ffffff'
+                },
+                maxHeight: 120
+            },
+            axisBorder: {
+                show: true,
+                color: '#3a3a3a'
+            },
+            axisTicks: {
+                show: true,
+                color: '#3a3a3a'
             }
         },
         yaxis: {
+            position: 'right',
             tooltip: {
                 enabled: true
             },
             labels: {
-                formatter: value => value.toLocaleString()
+                formatter: function(value) {
+                    return value.toLocaleString();
+                },
+                style: {
+                    colors: '#ffffff'
+                }
+
+            }
+        },
+        tooltip: {
+            enabled: true,
+            enabledOnSeries: undefined,
+            shared: false,
+            followCursor: false,
+            intersect: false,
+            inverseOrder: false,
+            custom: function({ seriesIndex, dataPointIndex, w }) {
+                const data = sortedData[dataPointIndex];
+                const date = data.date;
+                const formattedDate = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`;
+                return `
+                    <div style="background: rgb(35, 35, 39); padding: 10px; border: 1px solid #3a3a3a; border-radius: 4px;">
+                        <div style="font-weight: bold; margin-bottom: 5px; font-size:16px; color:#ffffff;">
+                            ${formattedDate}
+                        </div>
+                        <div style="color: #FF6384;">시가: ${parseFloat(data.open).toLocaleString()}</div>
+                        <div style="color: #FF6384;">고가: ${parseFloat(data.high).toLocaleString()}</div>
+                        <div style="color: #36A2EB;">저가: ${parseFloat(data.low).toLocaleString()}</div>
+                        <div style="color: #36A2EB;">종가: ${parseFloat(data.close).toLocaleString()}</div>
+                    </div>
+                `;
+            },
+            style: {
+                fontSize: '12px',
+                fontFamily: 'Arial'
+            },
+            fixed: {
+                enabled: false,
+                position: 'topRight'
             }
         },
         plotOptions: {
@@ -90,11 +154,41 @@ const WeekCandleChart = ({ stockCode }) => {
                 colors: {
                     upward: '#FF6384',
                     downward: '#36A2EB'
+                },
+                wick: {
+                    useFillColor: true
                 }
             }
         },
-        tooltip: {
-            enabled: true
+        grid: {
+            show: true,
+            borderColor: '#2a2a2a',
+            strokeDashArray: 0,
+            position: 'back',
+            xaxis: {
+                lines: {
+                    show: false
+                }
+            },
+            yaxis: {
+                lines: {
+                    show: true
+                }
+            },
+            row: {
+                colors: undefined,
+                opacity: 0.3
+            },
+            column: {
+                colors: undefined,
+                opacity: 0.3
+            },
+            padding: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0
+            }
         }
     };
 

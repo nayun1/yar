@@ -1,3 +1,4 @@
+//StockDetailPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, User, Minus, Plus } from 'lucide-react';
@@ -414,11 +415,36 @@ const StockDetailPage = () => {
                         <div className="detail-chart-header">
                             <h3 className="detail-chart-title">차트</h3>
                             <div className="detail-chart-buttons">
-                                <button onClick={() => setSelectedType("time")}>시간별</button>
-                                <button onClick={() => setSelectedType("daily")}>일별</button>
-                                <button onClick={() => setSelectedType("weekly")}>주별</button>
-                                <button onClick={() => setSelectedType("monthly")}>월별</button>
-                                <button onClick={() => setSelectedType("yearly")}>년별</button>
+                                <button
+                                    className={selectedType === "time" ? "active" : ""}
+                                    onClick={() => setSelectedType("time")}
+                                >
+                                    시간별
+                                </button>
+                                <button
+                                    className={selectedType === "daily" ? "active" : ""}
+                                    onClick={() => setSelectedType("daily")}
+                                >
+                                    일별
+                                </button>
+                                <button
+                                    className={selectedType === "weekly" ? "active" : ""}
+                                    onClick={() => setSelectedType("weekly")}
+                                >
+                                    주별
+                                </button>
+                                <button
+                                    className={selectedType === "monthly" ? "active" : ""}
+                                    onClick={() => setSelectedType("monthly")}
+                                >
+                                    월별
+                                </button>
+                                <button
+                                    className={selectedType === "yearly" ? "active" : ""}
+                                    onClick={() => setSelectedType("yearly")}
+                                >
+                                    년별
+                                </button>
                             </div>
                         </div>
                         <div className="detail-stock-chart">

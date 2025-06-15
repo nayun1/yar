@@ -1,3 +1,4 @@
+//TimeCandleChart.jsx
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import axios from 'axios';
@@ -76,7 +77,7 @@ const TimeCandleChart = ({ stockCode }) => {
             toolbar: {
                 show: false
             },
-            background: 'rgb(35, 35, 39)', // 차트 배경색 변경
+            background: 'rgb(29, 29, 34)', // 차트 배경색 변경
             foreColor: '#ffffff', // 텍스트 색상을 흰색으로 변경
             redrawOnParentResize: false, // 부모 크기 변경 시 재그리기 비활성화
             redrawOnWindowResize: false // 윈도우 크기 변경 시 재그리기 비활성화
@@ -116,6 +117,9 @@ const TimeCandleChart = ({ stockCode }) => {
         },
         yaxis: {
             position: 'right',
+            tooltip: {
+                enabled: true
+            },
             labels: {
                 formatter: function(value) {
                     return value.toLocaleString();

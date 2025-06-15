@@ -195,7 +195,7 @@ const StockTradingMain = () => {
                     change: stock.change,
                     volume: stock.volume,
                     rank: stock.rank,
-                    filterType: activeFilter // 현재 필터 정보도 함께 전달
+                    filterType: activeFilter
                 }
             }
         });
