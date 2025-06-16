@@ -1,5 +1,5 @@
 //StockDetailPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { TrendingUp, TrendingDown, User, Minus, Plus } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
@@ -11,6 +11,7 @@ import DayCandleChart from "./DayCandleChart";
 import WeekCandleChart from "./WeekCandleChart";
 import MonthCandleChart from "./MonthCandleChart";
 import YearCandleChart from "./YearCandleChart";
+import {TradeContext} from "../Main/TradeContext";
 import './StockDetailPage.css';
 
 
@@ -29,6 +30,7 @@ const StockDetailPage = () => {
     const [priceType, setPriceType] = useState('지정가'); // '지정가', '시장가'
     const [orderPrice, setOrderPrice] = useState('');
     const [orderQuantity, setOrderQuantity] = useState(''); // 빈 문자열로 초기화
+    const {balance,stocks, buyStock} = useContext(TradeContext);
 
     // 인증 상태 관리
     const { isLoggedIn, userInfo, loading: authLoading, logout } = useAuth();
@@ -662,7 +664,7 @@ const StockDetailPage = () => {
                                 <div className="detail-order-summary">
                                     <div className="detail-summary-row">
                                         <span>구매가능 금액</span>
-                                        <span>1,000,000원</span>
+                                        <span>{balance}</span>
                                     </div>
                                     <div className="detail-summary-row detail-total">
                                         <span>총 주문 금액</span>

@@ -6,11 +6,12 @@ import MyAssets from './components/MyAssets/MyAssets';
 import KakaoCallback from './components/common/KakaoCallback';
 import VolumeRankList from './components/VolumeRankList';
 import StockDetailPage from "./components/Stock-details/StockDetailPage";
-
+import {TradeProvider} from "./components/Main/TradeContext";
 import './App.css';
 
 function App() {
     return (
+        <TradeProvider>
         <Router>
             <div className="App">
                 <Routes>
@@ -23,6 +24,7 @@ function App() {
 
             </div>
         </Router>
+        </TradeProvider>
     );
 }
 
