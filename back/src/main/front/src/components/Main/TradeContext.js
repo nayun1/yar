@@ -32,10 +32,20 @@ export const TradeProvider = ({ children }) => {
         if (balance < cost) return false;
 
         setBalance(balance - cost);
-        setStocks((prev) => ({
-            ...prev,
-            [stockCode]: (prev[stockCode] || 0) + quantity,
-        }));
+        setStocks((prev) => {
+            const currentStock = prev[stockCode] || { quantity: 0, totalPrice: 0 };
+            const newQuantity = currentStock.quantity + quantity;
+            const newTotalPrice = currentStock.totalPrice + cost;
+
+            return {
+                ...prev,
+                [stockCode]: {
+                    quantity: newQuantity,
+                    totalPrice: newTotalPrice,
+                    averagePrice: Math.round(newTotalPrice / newQuantity)
+                }
+            };
+        });
         setHistory((prev) => [
             ...prev,
             { type: 'BUY', stockCode, price, quantity, date: new Date() },
@@ -44,13 +54,30 @@ export const TradeProvider = ({ children }) => {
     };
 
     const sellStock = (stockCode, price, quantity) => {
-        if (!stocks[stockCode] || stocks[stockCode] < quantity) return false;
+        if (!stocks[stockCode] || stocks[stockCode].quantity < quantity) return false;
 
         setBalance(balance + price * quantity);
-        setStocks((prev) => ({
-            ...prev,
-            [stockCode]: prev[stockCode] - quantity,
-        }));
+        setStocks((prev) => {
+            const currentStock = prev[stockCode];
+            const newQuantity = currentStock.quantity - quantity;
+            
+            if (newQuantity === 0) {
+                // 수량이 0이 되면 해당 주식 정보 삭제
+                const newStocks = { ...prev };
+                delete newStocks[stockCode];
+                return newStocks;
+            }
+
+            // 수량이 남아있으면 평균 매수가는 유지
+            return {
+                ...prev,
+                [stockCode]: {
+                    quantity: newQuantity,
+                    totalPrice: currentStock.averagePrice * newQuantity,
+                    averagePrice: currentStock.averagePrice
+                }
+            };
+        });
         setHistory((prev) => [
             ...prev,
             { type: 'SELL', stockCode, price, quantity, date: new Date() },
