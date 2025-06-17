@@ -210,7 +210,7 @@ const MyAssets = () => {
             }
         });
     };
-    
+
     // 총 투자금액과 평가금액 계산
     const calculateTotalAssets = () => {
         const holdingsData = getHoldingsData();

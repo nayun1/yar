@@ -457,7 +457,7 @@ const StockDetailPage = () => {
                         {!isLoggedIn ? (
                             <div className="detail-order-login-required">
                                 <div className="detail-order-form-group detail-price-group">
-                                    <label>金额</label>
+                                    <label>금액</label>
                                     <div className="detail-price-input-container">
                                         <input
                                             type="text"
@@ -470,20 +470,20 @@ const StockDetailPage = () => {
 
                                 <div className="detail-order-form-group detail-quantity-group">
                                     <label>수량</label>
-                                    <div className="detail-quantity-input-container">
+                                    <div className="detail-quantity-input-container-safe">
                                         <input
                                             type="text"
-                                            className="detail-quantity-input"
+                                            className="detail-quantity-input-safe"
                                             value=""
                                             placeholder="수량 입력"
                                             disabled
                                         />
-                                        <div className="detail-quantity-controls">
-                                            <button className="detail-quantity-control-btn" disabled>
-                                                <Minus size={16} />
+                                        <div className="detail-quantity-controls-safe">
+                                            <button className="detail-quantity-control-btn-safe" disabled>
+                                                <Minus size={14} />
                                             </button>
-                                            <button className="detail-quantity-control-btn" disabled>
-                                                <Plus size={16} />
+                                            <button className="detail-quantity-control-btn-safe" disabled>
+                                                <Plus size={14} />
                                             </button>
                                         </div>
                                     </div>
@@ -520,10 +520,10 @@ const StockDetailPage = () => {
 
                                 <div className="detail-order-form-group detail-quantity-group">
                                     <label>수량</label>
-                                    <div className="detail-quantity-input-container">
+                                    <div className="detail-quantity-input-container-safe">
                                         <input
                                             type="text"
-                                            className="detail-quantity-input"
+                                            className="detail-quantity-input-safe"
                                             value={orderQuantity ? `${orderQuantity} 주` : ''}
                                             onChange={handleQuantityChange}
                                             placeholder="수량 입력"
@@ -543,18 +543,18 @@ const StockDetailPage = () => {
                                                 }
                                             }}
                                         />
-                                        <div className="detail-quantity-controls">
+                                        <div className="detail-quantity-controls-safe">
                                             <button
-                                                className="detail-quantity-control-btn"
+                                                className="detail-quantity-control-btn-safe"
                                                 onClick={() => adjustQuantity(-1)}
                                             >
-                                                <Minus size={16}/>
+                                                <Minus size={14}/>
                                             </button>
                                             <button
-                                                className="detail-quantity-control-btn"
+                                                className="detail-quantity-control-btn-safe"
                                                 onClick={() => adjustQuantity(1)}
                                             >
-                                                <Plus size={16}/>
+                                                <Plus size={14}/>
                                             </button>
                                         </div>
                                     </div>
