@@ -1,4 +1,4 @@
-// src/context/TradeContext.js
+// src/components/Main/TradeContext.js
 import { createContext, useState, useEffect } from 'react';
 
 export const TradeContext = createContext();
@@ -60,7 +60,7 @@ export const TradeProvider = ({ children }) => {
         setStocks((prev) => {
             const currentStock = prev[stockCode];
             const newQuantity = currentStock.quantity - quantity;
-            
+
             if (newQuantity === 0) {
                 // 수량이 0이 되면 해당 주식 정보 삭제
                 const newStocks = { ...prev };
