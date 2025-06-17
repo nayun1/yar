@@ -30,7 +30,7 @@ const StockDetailPage = () => {
     const [priceType, setPriceType] = useState('지정가'); // '지정가', '시장가'
     const [orderPrice, setOrderPrice] = useState('');
     const [orderQuantity, setOrderQuantity] = useState(''); // 빈 문자열로 초기화
-    const {balance,stocks, buyStock} = useContext(TradeContext);
+    const {balance,stocks, buyStock, sellStock} = useContext(TradeContext);
 
     // 인증 상태 관리
     const { isLoggedIn, userInfo, loading: authLoading, logout } = useAuth();
@@ -259,24 +259,53 @@ const StockDetailPage = () => {
             return;
         }
 
-        // 수량이 입력되지 않았거나 0인 경우
         if (!orderQuantity || parseInt(orderQuantity) <= 0) {
             setShowQuantityAlert(true);
             return;
         }
 
-        // 주문 처리 로직
-        console.log('주문 실행:', {
-            orderType,
-            priceType,
-            price: priceType === '시장가' ? stockData.price : parseInt(orderPrice.replace(/,/g, '')),
-            quantity: parseInt(orderQuantity),
-            total: calculateTotalPrice()
-        });
+        const price = priceType === '시장가'
+            ? stockData.price
+            : parseInt(orderPrice.replace(/,/g, '')) || 0;
+        const quantity = parseInt(orderQuantity);
 
-        const actionText = orderType === 'buy' ? '구매' : '판매';
-        alert(`${actionText} 주문이 접수되었습니다.`);
+        // 지정가 주문 체결 조건
+        if (priceType === '지정가') {
+            if (orderType === 'buy' && stockData.price < price) {
+                alert('매수 지정가 주문은 현재가가 지정가 이하일 때만 체결됩니다.');
+                return;
+            }
+            if (orderType === 'sell' && stockData.price > price) {
+                alert('매도 지정가 주문은 현재가가 지정가 이상일 때만 체결됩니다.');
+                return;
+            }
+        }
+
+        if (orderType === 'buy') {
+            const success = buyStock(stockData.code, price, quantity);
+            if (!success) {
+                alert('잔고가 부족합니다.');
+                return;
+            }
+            alert('구매 주문이 체결되었습니다.');
+        } else if (orderType === 'sell') {
+            if (!stocks[stockData.code] || stocks[stockData.code] < quantity) {
+                alert('보유 주식 수량이 부족합니다.');
+                return;
+            }
+            const success = sellStock(stockData.code, price, quantity);
+            if (!success) {
+                alert('판매 실패: 보유 수량 부족');
+                return;
+            }
+            alert('판매 주문이 체결되었습니다.');
+        }
+
+        setOrderQuantity('');
+        setOrderPrice(stockData.price.toLocaleString());
     };
+
+
 
     const getOrderButtonText = () => {
         if (!isLoggedIn) return '로그인하고 구매하기';
@@ -660,17 +689,23 @@ const StockDetailPage = () => {
                                         </div>
                                     </div>
                                 </div>
-
                                 <div className="detail-order-summary">
                                     <div className="detail-summary-row">
                                         <span>구매가능 금액</span>
-                                        <span>{balance}</span>
+                                        <span>{balance.toLocaleString()}원</span>
                                     </div>
+                                    {orderType === 'sell' && (
+                                        <div className="detail-summary-row">
+                                            <span>보유 수량</span>
+                                            <span>{stocks[stockData.code] || 0} 주</span>
+                                        </div>
+                                    )}
                                     <div className="detail-summary-row detail-total">
                                         <span>총 주문 금액</span>
                                         <span>{calculateTotalPrice().toLocaleString()}원</span>
                                     </div>
                                 </div>
+
 
                                 <button className={getOrderButtonClass()} onClick={handleOrder}>
                                     {getOrderButtonText()}
