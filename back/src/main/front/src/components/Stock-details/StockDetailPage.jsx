@@ -209,6 +209,19 @@ const StockDetailPage = () => {
         return price * quantity;
     };
 
+    // 보유 수량을 가져오는 헬퍼 함수 추가
+    const getHoldingQuantity = (stockCode) => {
+        if (!stocks[stockCode]) return 0;
+
+        // stocks[stockCode]가 객체인 경우
+        if (typeof stocks[stockCode] === 'object') {
+            return stocks[stockCode].quantity || 0;
+        }
+
+        // stocks[stockCode]가 숫자인 경우
+        return stocks[stockCode] || 0;
+    };
+
     const handleOrder = () => {
         if (!isLoggedIn) {
             setShowLoginModal(true);
@@ -232,7 +245,8 @@ const StockDetailPage = () => {
             }
             alert('구매 주문이 체결되었습니다.');
         } else if (orderType === 'sell') {
-            if (!stocks[stockData.code] || stocks[stockData.code] < quantity) {
+            const holdingQuantity = getHoldingQuantity(stockData.code);
+            if (holdingQuantity < quantity) {
                 alert('보유 주식 수량이 부족합니다.');
                 return;
             }
@@ -443,7 +457,7 @@ const StockDetailPage = () => {
                         {!isLoggedIn ? (
                             <div className="detail-order-login-required">
                                 <div className="detail-order-form-group detail-price-group">
-                                    <label>금액</label>
+                                    <label>金额</label>
                                     <div className="detail-price-input-container">
                                         <input
                                             type="text"
@@ -554,7 +568,7 @@ const StockDetailPage = () => {
                                     {orderType === 'sell' && (
                                         <div className="detail-summary-row">
                                             <span>보유 수량</span>
-                                            <span>{stocks[stockData.code] || 0} 주</span>
+                                            <span>{getHoldingQuantity(stockData.code)} 주</span>
                                         </div>
                                     )}
                                     <div className="detail-summary-row detail-total">
