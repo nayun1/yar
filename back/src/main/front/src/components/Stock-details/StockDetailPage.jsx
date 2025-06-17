@@ -26,8 +26,6 @@ const StockDetailPage = () => {
 
     // 주문 관련 상태
     const [orderType, setOrderType] = useState('buy'); // 'buy', 'sell'
-    const [priceType, setPriceType] = useState('지정가'); // '지정가', '시장가'
-    const [orderPrice, setOrderPrice] = useState('');
     const [orderQuantity, setOrderQuantity] = useState(''); // 빈 문자열로 초기화
 
     // 인증 상태 관리
@@ -44,13 +42,6 @@ const StockDetailPage = () => {
         }
     }, [code, location.state]);
 
-    // 주식 데이터가 로드되면 주문 가격 초기화 (한번만)
-    useEffect(() => {
-        if (stockData && stockData.price && orderPrice === '') {
-            setOrderPrice(stockData.price.toLocaleString());
-        }
-    }, [stockData]);
-
     // 10초마다 주가 정보 자동 새로고침
     useEffect(() => {
         if (!stockData?.code) return;
@@ -61,7 +52,7 @@ const StockDetailPage = () => {
                 if (response.ok) {
                     const data = await response.json();
 
-                    // 현재가와 등락률만 업데이트 (주문 가격은 건드리지 않음)
+                    // 현재가와 등락률만 업데이트
                     setStockData(prevData => ({
                         ...prevData,
                         price: parseInt(data.currentPrice?.replace(/,/g, '') || prevData.price),
@@ -196,37 +187,6 @@ const StockDetailPage = () => {
         return null;
     };
 
-    // 호가 단위 계산 함수
-    const getTickSize = (price) => {
-        if (price < 2000) return 1;
-        if (price < 5000) return 5;
-        if (price < 20000) return 10;
-        if (price < 50000) return 50;
-        if (price < 200000) return 100;
-        if (price < 500000) return 500;
-        return 1000;
-    };
-
-    // 주문 관련 핸들러
-    const handlePriceChange = (e) => {
-        const fullValue = e.target.value;
-        // "원"을 제거하고 숫자만 추출
-        const rawValue = fullValue.replace(/[^0-9]/g, '');
-        if (rawValue === '') {
-            setOrderPrice('0');
-        } else {
-            setOrderPrice(parseInt(rawValue).toLocaleString());
-        }
-    };
-
-    const adjustPrice = (direction) => {
-        const currentPrice = parseInt(orderPrice.replace(/,/g, '')) || 0;
-        const tickSize = getTickSize(stockData.price); // 주식의 현재 주가 기준으로 호가 단위 결정
-        const increment = direction > 0 ? tickSize : -tickSize;
-        const newPrice = Math.max(0, currentPrice + increment);
-        setOrderPrice(newPrice.toLocaleString());
-    };
-
     const handleQuantityChange = (e) => {
         const fullValue = e.target.value;
         // "주"를 제거하고 숫자만 추출
@@ -241,12 +201,8 @@ const StockDetailPage = () => {
     };
 
     const calculateTotalPrice = () => {
-        let price;
-        if (priceType === '시장가') {
-            price = stockData.price; // 시장가일 때는 현재가 사용
-        } else {
-            price = parseInt(orderPrice.replace(/,/g, '')) || 0; // 지정가일 때는 입력한 가격 사용
-        }
+        // 시장가로만 동작하므로 항상 현재가 사용
+        const price = stockData.price;
         const quantity = parseInt(orderQuantity) || 0;
         return price * quantity;
     };
@@ -266,8 +222,8 @@ const StockDetailPage = () => {
         // 주문 처리 로직
         console.log('주문 실행:', {
             orderType,
-            priceType,
-            price: priceType === '시장가' ? stockData.price : parseInt(orderPrice.replace(/,/g, '')),
+            priceType: '시장가',
+            price: stockData.price,
             quantity: parseInt(orderQuantity),
             total: calculateTotalPrice()
         });
@@ -293,11 +249,6 @@ const StockDetailPage = () => {
             baseClass += ' detail-sell';
         }
         return baseClass;
-    };
-
-    const getQuantityDisplayValue = () => {
-        if (!orderQuantity) return '';
-        return `${orderQuantity} 주`;
     };
 
     if (loading) {
@@ -419,31 +370,31 @@ const StockDetailPage = () => {
                                     className={selectedType === "time" ? "active" : ""}
                                     onClick={() => setSelectedType("time")}
                                 >
-                                    시간별
+                                    1분
                                 </button>
                                 <button
                                     className={selectedType === "daily" ? "active" : ""}
                                     onClick={() => setSelectedType("daily")}
                                 >
-                                    일별
+                                    일
                                 </button>
                                 <button
                                     className={selectedType === "weekly" ? "active" : ""}
                                     onClick={() => setSelectedType("weekly")}
                                 >
-                                    주별
+                                    주
                                 </button>
                                 <button
                                     className={selectedType === "monthly" ? "active" : ""}
                                     onClick={() => setSelectedType("monthly")}
                                 >
-                                    월별
+                                    월
                                 </button>
                                 <button
                                     className={selectedType === "yearly" ? "active" : ""}
                                     onClick={() => setSelectedType("yearly")}
                                 >
-                                    년별
+                                    년
                                 </button>
                             </div>
                         </div>
@@ -477,24 +428,7 @@ const StockDetailPage = () => {
                         {!isLoggedIn ? (
                             <div className="detail-order-login-required">
                                 <div className="detail-order-form-group detail-price-group">
-                                    <label>구매 가격</label>
-                                    <div className="detail-price-type-buttons">
-                                        <button
-                                            className={`detail-price-type-btn ${priceType === '지정가' ? 'active' : ''}`}
-                                            onClick={() => setPriceType('지정가')}
-                                        >
-                                            지정가
-                                        </button>
-                                        <button
-                                            className={`detail-price-type-btn ${priceType === '시장가' ? 'active' : ''}`}
-                                            onClick={() => setPriceType('시장가')}
-                                        >
-                                            시장가
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="detail-order-form-group detail-price-group">
+                                    <label>금액</label>
                                     <div className="detail-price-input-container">
                                         <input
                                             type="text"
@@ -502,14 +436,6 @@ const StockDetailPage = () => {
                                             value={`${stockData.price.toLocaleString()} 원`}
                                             disabled
                                         />
-                                        <div className="detail-price-controls">
-                                            <button className="detail-price-control-btn" disabled>
-                                                <Minus size={16} />
-                                            </button>
-                                            <button className="detail-price-control-btn" disabled>
-                                                <Plus size={16} />
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -552,68 +478,14 @@ const StockDetailPage = () => {
                         ) : (
                             <div className="detail-order-form">
                                 <div className="detail-order-form-group detail-price-group">
-                                    <label>구매 가격</label>
-                                    <div className="detail-price-type-buttons">
-                                        <button
-                                            className={`detail-price-type-btn ${priceType === '지정가' ? 'active' : ''}`}
-                                            onClick={() => setPriceType('지정가')}
-                                        >
-                                            지정가
-                                        </button>
-                                        <button
-                                            className={`detail-price-type-btn ${priceType === '시장가' ? 'active' : ''}`}
-                                            onClick={() => setPriceType('시장가')}
-                                        >
-                                            시장가
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="detail-order-form-group detail-price-group">
+                                    <label>금액</label>
                                     <div className="detail-price-input-container">
                                         <input
                                             type="text"
                                             className="detail-price-input"
-                                            value={priceType === '시장가' ? `${stockData.price.toLocaleString()} 원` : `${orderPrice} 원`}
-                                            onChange={handlePriceChange}
-                                            disabled={priceType === '시장가'}
-                                            onKeyDown={(e) => {
-                                                // 백스페이스나 Delete 키 처리
-                                                if (e.key === 'Backspace') {
-                                                    const currentValue = e.target.value;
-                                                    const cursorPosition = e.target.selectionStart;
-
-                                                    // 커서가 " 원" 부분에 있거나 그 바로 앞에 있을 때
-                                                    if (cursorPosition >= currentValue.length - 2) {
-                                                        e.preventDefault();
-                                                        // 마지막 숫자 하나 제거
-                                                        const cleanPrice = orderPrice.replace(/,/g, '');
-                                                        const newPrice = cleanPrice.slice(0, -1);
-                                                        if (newPrice === '') {
-                                                            setOrderPrice('0');
-                                                        } else {
-                                                            setOrderPrice(parseInt(newPrice).toLocaleString());
-                                                        }
-                                                    }
-                                                }
-                                            }}
+                                            value={`${stockData.price.toLocaleString()} 원`}
+                                            disabled
                                         />
-                                        <div className="detail-price-controls">
-                                            <button
-                                                className="detail-price-control-btn"
-                                                onClick={() => adjustPrice(-1)}
-                                                disabled={priceType === '시장가'}
-                                            >
-                                                <Minus size={16}/>
-                                            </button>
-                                            <button
-                                                className="detail-price-control-btn"
-                                                onClick={() => adjustPrice(1)}
-                                                disabled={priceType === '시장가'}
-                                            >
-                                                <Plus size={16}/>
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
 

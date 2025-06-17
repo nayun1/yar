@@ -217,8 +217,8 @@
     flex: 1;
     padding: 50px 30px;
     background-color: #1a1a1a;
-    margin-left: 300px;
-    max-width: 800px;
+    margin-left: 140px;
+    max-width: 1200px;
 }
 
 /* 총 자산 섹션 */
@@ -248,6 +248,10 @@
 
 .negative {
     color: #ff6b6b;
+}
+
+.neutral {
+    color: #888;
 }
 
 /* 공통 섹션 타이틀 */
@@ -295,74 +299,70 @@
     width: 100%;
 }
 
-.holdings-list {
+/* 테이블 스타일 - 크기 확장 */
+.holdings-table {
     display: flex;
     flex-direction: column;
-    gap: 8px;
     margin-top: 20px;
+    width: 100%;
 }
 
-.holdings-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 20px;
-    background: transparent;
-    border: none;
-    border-radius: 12px;
-    transition: background-color 0.2s;
-    cursor: pointer;
+.holdings-table-header {
+    display: grid;
+    grid-template-columns: 200px 150px 150px 150px 150px 150px 150px;
+    width: 100%;
 }
 
-.holdings-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-}
-
-.holdings-item-left {
-    display: flex;
-    align-items: center;
-}
-
-.holdings-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.holdings-name {
+.holdings-header-cell {
+    padding: 16px 12px;
     font-size: 14px;
     font-weight: 600;
-    color: white;
-    margin-bottom: 2px;
+    color: #ccc;
+    text-align: center;
 }
 
-.holdings-item-right {
+.holdings-header-cell.name {
+    text-align: left;
+    padding-left: 20px;
+}
+
+.holdings-table-row {
+    display: grid;
+    grid-template-columns: 200px 150px 150px 150px 150px 150px 150px;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    width: 100%;
+}
+
+.holdings-table-row:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.holdings-cell {
+    padding: 16px 12px;
+    font-size: 15px;
+    color: white;
+    text-align: center;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
+    align-items: center;
+    justify-content: center;
 }
 
-.holdings-price {
-    font-size: 16px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 2px;
+.holdings-cell.name {
+    text-align: left;
+    padding-left: 20px;
+    justify-content: flex-start;
+    font-weight: 600;
 }
 
-.holdings-change {
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.holdings-change.positive {
+.holdings-cell.positive {
     color: #ff4444;
 }
 
-.holdings-change.negative {
+.holdings-cell.negative {
     color: #4285f4;
 }
 
-.holdings-change.neutral {
+.holdings-cell.neutral {
     color: #888;
 }
