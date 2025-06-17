@@ -215,32 +215,14 @@ const StockDetailPage = () => {
             return;
         }
 
+        // 수량이 입력되지 않았거나 0인 경우
         if (!orderQuantity || parseInt(orderQuantity) <= 0) {
             setShowQuantityAlert(true);
             return;
         }
 
-
-        // 주문 처리 로직
-        console.log('주문 실행:', {
-            orderType,
-            priceType: '시장가',
-            price: stockData.price,
-            quantity: parseInt(orderQuantity),
-            total: calculateTotalPrice()
-        });
-
-        // 지정가 주문 체결 조건
-        if (priceType === '지정가') {
-            if (orderType === 'buy' && stockData.price < price) {
-                alert('매수 지정가 주문은 현재가가 지정가 이하일 때만 체결됩니다.');
-                return;
-            }
-            if (orderType === 'sell' && stockData.price > price) {
-                alert('매도 지정가 주문은 현재가가 지정가 이상일 때만 체결됩니다.');
-                return;
-            }
-        }
+        const price = stockData.price; // 시장가로만 동작
+        const quantity = parseInt(orderQuantity);
 
         if (orderType === 'buy') {
             const success = buyStock(stockData.code, price, quantity);
@@ -263,10 +245,7 @@ const StockDetailPage = () => {
         }
 
         setOrderQuantity('');
-        setOrderPrice(stockData.price.toLocaleString());
     };
-
-
 
     const getOrderButtonText = () => {
         if (!isLoggedIn) return '로그인하고 구매하기';
@@ -566,6 +545,7 @@ const StockDetailPage = () => {
                                         </div>
                                     </div>
                                 </div>
+
                                 <div className="detail-order-summary">
                                     <div className="detail-summary-row">
                                         <span>구매가능 금액</span>
@@ -582,7 +562,6 @@ const StockDetailPage = () => {
                                         <span>{calculateTotalPrice().toLocaleString()}원</span>
                                     </div>
                                 </div>
-
 
                                 <button className={getOrderButtonClass()} onClick={handleOrder}>
                                     {getOrderButtonText()}
