@@ -197,15 +197,17 @@ const MyAssets = () => {
 
     // 종목 클릭 핸들러
     const handleStockClick = (stock) => {
+        const changePercent = stock.currentPrice > stock.avgPrice ?
+            ((stock.currentPrice - stock.avgPrice) / stock.avgPrice * 100) :
+            -((stock.avgPrice - stock.currentPrice) / stock.avgPrice * 100);
+
         navigate(`/stock/${stock.code}`, {
             state: {
                 stockData: {
                     code: stock.code,
                     name: stock.name,
                     price: stock.currentPrice,
-                    change: stock.currentPrice > stock.avgPrice ?
-                        ((stock.currentPrice - stock.avgPrice) / stock.avgPrice * 100) :
-                        -((stock.avgPrice - stock.currentPrice) / stock.avgPrice * 100)
+                    change: parseFloat(changePercent.toFixed(2))
                 }
             }
         });
@@ -247,7 +249,7 @@ const MyAssets = () => {
                         <div className="total-assets-section">
                             <h3 className="assets-section-title">총 자산</h3>
                             <div className="total-assets-amount">{formatNumber(totalAssets)}원</div>
-                            <div className={`total-assets-change ${totalProfit >= 0 ? 'positive' : 'negative'}`}>
+                            <div className={`total-assets-change ${totalProfit >= 0 ? (totalProfit === 0 ? 'neutral' : 'negative') : 'positive'}`}>
                                 {totalProfit >= 0 ? '+' : ''}{formatNumber(totalProfit)}원 ({profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(1)}%)
                             </div>
                         </div>
@@ -272,7 +274,7 @@ const MyAssets = () => {
                                     <div className="card-details">
                                         <div className="card-label">주식</div>
                                         <div className="card-amount">{formatNumber(totalEvaluation)}원</div>
-                                        <div className={`card-change ${totalProfit >= 0 ? 'positive' : 'negative'}`}>
+                                        <div className={`card-change ${totalProfit >= 0 ? (totalProfit === 0 ? 'neutral' : 'negative') : 'positive'}`}>
                                             {totalProfit >= 0 ? '+' : ''}{formatNumber(totalProfit)}원 ({profitPercent >= 0 ? '+' : ''}{profitPercent.toFixed(1)}%)
                                         </div>
                                     </div>
