@@ -1,0 +1,25 @@
+# =======================================
+# Database (MySQL)
+# =======================================
+# 데이터베이스 연결을 위한 URL, 사용자 이름, 비밀번호를 입력하세요.
+spring.datasource.url=jdbc:mysql://localhost:3306/yar_db?useSSL=false&serverTimezone=UTC
+spring.datasource.username=YOUR_DATABASE_USERNAME
+spring.datasource.password=YOUR_DATABASE_PASSWORD
+
+# =======================================
+# JPA & Hibernate
+# =======================================
+# 애플리케이션 실행 시 스키마 생성 전략 (e.g., update, validate, none)
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# =======================================
+# Korea Investment & Securities API
+# =======================================
+# 한국투자증권에서 발급받은 APP KEY와 APP SECRET을 입력하세요.
+# 모의투자/실전투자 URL 중 사용할 환경의 주석을 해제하고 다른 하나는 주석 처리하세요.
+kis.api.app-key=YOUR_APP_KEY
+kis.api.app-secret=YOUR_APP_SECRET
+kis.api.base-url=https://openapivts.koreainvestment.com:29443 # 모의투자 환경
+# kis.api.base-url=https://openapi.koreainvestment.com:9443 # 실전투자 환경

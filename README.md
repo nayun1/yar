@@ -47,33 +47,24 @@
 - MySQL 서버
 - **한국투자증권 API KEY 발급** ([공식 가이드](https://apiportal.koreainvestment.com/))
 
-### 2. 백엔드 설정 및 실행
+### 2. 백엔드 설정
+> **중요**: Git은 보안을 위해 `application.properties` 파일을 추적하지 않습니다. 아래 절차에 따라 설정을 직접 구성해야 합니다.
+
 ```bash
-# 1. 프로젝트를 복제합니다.
-git clone https://github.com/your-username/yar.git
-cd yar/back
+# 1. /back/src/main/resources/ 디렉토리로 이동합니다.
+cd back/src/main/resources
 
-# 2. application.properties 파일을 수정합니다.
-# (src/main/resources/application.properties)
-# 아래 내용으로 데이터베이스 및 KIS API 키 정보를 입력하세요.
+# 2. 예제 설정 파일을 복사하여 실제 설정 파일을 생성합니다.
+cp application.properties.example application.properties
 ```
-```properties
-# Database (MySQL)
-spring.datasource.url=jdbc:mysql://localhost:3306/yar_db?useSSL=false&serverTimezone=UTC
-spring.datasource.username=db_username
-spring.datasource.password=db_password
-spring.jpa.hibernate.ddl-auto=update
 
-# Korea Investment & Securities API
-kis.api.app-key=YOUR_APP_KEY
-kis.api.app-secret=YOUR_APP_SECRET
-kis.api.base-url=https://openapivts.koreainvestment.com:29443 # 모의투자
-```
+**3. `application.properties` 파일 수정**
+   방금 생성한 `application.properties` 파일을 열고, 본인의 환경에 맞게 `YOUR_DATABASE_USERNAME`, `YOUR_DATABASE_PASSWORD`, `YOUR_APP_KEY`, `YOUR_APP_SECRET` 등의 값을 채워넣습니다.
 
 ### 3. 프론트엔드 설정 및 빌드
 ```bash
 # 1. 프론트엔드 디렉토리로 이동합니다.
-cd src/main/front
+cd back/src/main/front # 프로젝트 루트 기준
 
 # 2. 의존성 패키지를 설치합니다.
 npm install
@@ -86,7 +77,7 @@ npm run build
 ### 4. 전체 애플리케이션 실행
 ```bash
 # back 디렉토리에서 Gradle을 사용하여 Spring Boot 서버를 실행합니다.
-# 서버가 시작되면 빌드된 React 앱이 함께 서비스됩니다.
+cd back # 프로젝트 루트 기준
 ./gradlew bootRun
 ```
 애플리케이션이 실행되면, `http://localhost:8080` 주소로 접속하여 확인할 수 있습니다.
@@ -97,23 +88,30 @@ npm run build
 본 프로젝트는 백엔드(Spring) 프로젝트 내에 프론트엔드(React) 프로젝트가 포함된 구조입니다. Gradle 빌드 시 React 빌드 결과물이 Spring Boot의 정적 리소스로 포함됩니다.
 ```
 yar/
+├── @pictures/                # 🖼️ 화면 이미지
+├── README.md                 # 📖 프로젝트 안내서
 └── back/
-    ├── build.gradle              # 📜 Gradle 빌드 스크립트 (FE 빌드 연동 가능)
+    ├── build.gradle              # 📜 Gradle 빌드 스크립트
     └── src/
         ├── main/
-        │   ├── java/com/yar/     # ☕ 백엔드 Java 소스 코드 (API, 비즈니스 로직)
+        │   ├── java/com/yar/     # ☕ 백엔드 Java 소스 코드
+        │   │   ├── config/       # 애플리케이션 설정 (DB, Security, KIS API 등)
+        │   │   ├── controller/   # API 엔드포인트 및 요청/응답 처리
+        │   │   ├── domain/       # 비즈니스 핵심 로직 및 도메인 엔티티
+        │   │   ├── dto/          # 데이터 전송 객체 (Request/Response)
+        │   │   ├── repository/   # 데이터베이스 접근 (JPA Repository)
+        │   │   ├── service/      # 비즈니스 로직 및 트랜잭션 관리
+        │   │   ├── exception/    # 예외 처리 관련 클래스
+        │   │   └── util/         # 유틸리티 클래스
         │   │
-        │   ├── resources/
-        │   │   ├── static/       # ⬅️ React 빌드 결과물이 위치하는 곳 (npm run build 후 생성)
-        │   │   └── application.properties
+        │   ├── resources/        # 🏞️ 정적 리소스 및 설정 파일
+        │   │   ├── static/       # ⬅️ React 빌드 결과물이 위치하는 곳
+        │   │   ├── application.properties      # ⛔ Git 추적 제외 (로컬 설정)
+        │   │   └── application.properties.example # 템플릿 설정 파일
         │   │
         │   └── front/            # ⚛️ 프론트엔드 React 소스 코드
-        │       ├── src/
-        │       ├── public/
-        │       ├── package.json
-        │       └── ...
         │
-        └── test/
+        └── test/                 # 🧪 테스트 코드
 ```
 
 ---
@@ -129,3 +127,21 @@ yar/
 | **내 자산 현황** | `GET /api/account/balance` | 보유 종목, 평가 손익 등 자신의 자산 현황을 확인합니다. |
 
 ---
+
+## 🖼️ 화면 구성
+| 화면 | 설명 |
+| --- | --- |
+| ![데이터 흐름](@pictures/dataflow.png) | **데이터 흐름** |
+| ![카카오 로그인](@pictures/kakao.png) | **카카오 로그인 화면** |
+| ![메인 화면](@pictures/main.png) | **메인 화면** |
+| ![보유 종목](@pictures/mystock.png) | **보유 종목 화면** |
+| ![보유 자산](@pictures/mystock-2.png) | **보유 자산 화면** |
+| ![검색바](@pictures/searchbar.png) | **검색바 기능** |
+| ![주식 차트](@pictures/stock.png) | **주식 차트 화면** |
+
+---
+
+## 🏗️ 아키텍처 다이어그램
+
+![Architecture Diagram](https://via.placeholder.com/800x400.png?text=Full-Stack+Application+Architecture)
+*(여기에 전체 시스템 아키텍처 다이어그램 이미지를 추가하세요.)*
