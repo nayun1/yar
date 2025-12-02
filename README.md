@@ -132,7 +132,7 @@ yar/
 | 화면 | 설명 |
 | --- | --- |
 | ![데이터 흐름](<img width="1359" height="766" alt="Image" src="https://github.com/user-attachments/assets/cd6923bd-6422-4009-b6af-ceafd9ba3669" />) | **데이터 흐름** |
-| ![카카오 로그인](@pictures/kakao.png) | **카카오 로그인 화면** |
+| ![카카오 로그인](./pictures/kakao.png) | **카카오 로그인 화면** |
 | ![메인 화면](@pictures/main.png) | **메인 화면** |
 | ![보유 종목](@pictures/mystock.png) | **보유 종목 화면** |
 | ![보유 자산](@pictures/mystock-2.png) | **보유 자산 화면** |
