@@ -131,7 +131,7 @@ yar/
 ## 🖼️ 화면 구성
 | 화면 | 설명 |
 | --- | --- |
-| ![데이터 흐름](@pictures/dataflow.PNG) | **데이터 흐름** |
+| ![데이터 흐름](<img width="1359" height="766" alt="Image" src="https://github.com/user-attachments/assets/cd6923bd-6422-4009-b6af-ceafd9ba3669" />) | **데이터 흐름** |
 | ![카카오 로그인](@pictures/kakao.png) | **카카오 로그인 화면** |
 | ![메인 화면](@pictures/main.png) | **메인 화면** |
 | ![보유 종목](@pictures/mystock.png) | **보유 종목 화면** |
@@ -139,9 +139,3 @@ yar/
 | ![검색바](@pictures/searchbar.png) | **검색바 기능** |
 | ![주식 차트](@pictures/stock.png) | **주식 차트 화면** |
 
----
-
-## 🏗️ 아키텍처 다이어그램
-
-![Architecture Diagram](https://via.placeholder.com/800x400.png?text=Full-Stack+Application+Architecture)
-*(여기에 전체 시스템 아키텍처 다이어그램 이미지를 추가하세요.)*
