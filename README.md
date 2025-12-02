@@ -104,11 +104,6 @@ yar/
         │   │   ├── exception/    # 예외 처리 관련 클래스
         │   │   └── util/         # 유틸리티 클래스
         │   │
-        │   ├── resources/        # 🏞️ 정적 리소스 및 설정 파일
-        │   │   ├── static/       # ⬅️ React 빌드 결과물이 위치하는 곳
-        │   │   ├── application.properties      # ⛔ Git 추적 제외 (로컬 설정)
-        │   │   └── application.properties.example # 템플릿 설정 파일
-        │   │
         │   └── front/            # ⚛️ 프론트엔드 React 소스 코드
         │
         └── test/                 # 🧪 테스트 코드
@@ -129,13 +124,13 @@ yar/
 ---
 
 ## 🖼️ 화면 구성
-| 화면 | 설명 |
-| --- | --- |
-| ![데이터 흐름](<img width="1359" height="766" alt="Image" src="https://github.com/user-attachments/assets/cd6923bd-6422-4009-b6af-ceafd9ba3669" />) | **데이터 흐름** |
-| ![카카오 로그인](/pictures/kakao.png) | **카카오 로그인 화면** |
-| ![메인 화면](@pictures/main.png) | **메인 화면** |
-| ![보유 종목](@pictures/mystock.png) | **보유 종목 화면** |
-| ![보유 자산](@pictures/mystock-2.png) | **보유 자산 화면** |
-| ![검색바](@pictures/searchbar.png) | **검색바 기능** |
-| ![주식 차트](@pictures/stock.png) | **주식 차트 화면** |
+| 화면                                | 설명 |
+|-----------------------------------| --- |
+| ![데이터 흐름](/image/dataflow.png)    | **데이터 흐름** |
+| ![카카오 로그인](/image/kakao.png)      | **카카오 로그인 화면** |
+| ![메인 화면](/image/main.png)         | **메인 화면** |
+| ![보유 종목](/image/mystock.png)   | **보유 종목 화면** |
+| ![보유 자산](/image/mystock-2.png) | **보유 자산 화면** |
+| ![검색바](/image/searchbar.png)   | **검색바 기능** |
+| ![주식 차트](/image/stock.png)     | **주식 차트 화면** |
 
